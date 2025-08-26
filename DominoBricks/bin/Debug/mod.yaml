@@ -1,0 +1,11 @@
+title: "DominoBricks多米诺砖块"
+description: "拆除砖块时会获取四个方向的多米诺砖块，并触发拆除命令，实现连锁拆除"
+staticID: "DominoBricks"
+supportedContent: ALL
+minimumSupportedBuild: 469112
+version: 1.0.0
+APIVersion: 2
+brickTypes:
+  domino:
+    class: DominoBricks.DominoBrick
+    defaultType: Building

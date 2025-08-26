@@ -1,0 +1,1472 @@
+public class DragTool : InterfaceTool
+{
+    private enum DragAxis
+    {
+        Invalid = -1,
+        None,
+        Horizontal,
+        Vertical
+    }
+
+    public enum Mode
+    {
+        Brush,
+        Box,
+        Line
+    }
+
+    [SerializeField]
+    private Texture2D boxCursor;
+
+    [SerializeField]
+    private GameObject areaVisualizer;
+
+    [SerializeField]
+    private GameObject areaVisualizerTextPrefab;
+
+    [SerializeField]
+    private Color32 areaColour = new Color(1f, 1f, 1f, 0.5f);
+
+    protected SpriteRenderer areaVisualizerSpriteRenderer;
+
+    protected Guid areaVisualizerText;
+
+    protected Vector3 placementPivot;
+
+    protected bool interceptNumberKeysForPriority;
+
+    private bool dragging;
+
+    private Vector3 previousCursorPos;
+
+    private Mode mode = Mode.Box;
+
+    private DragAxis dragAxis = DragAxis.Invalid;
+
+    protected bool canChangeDragAxis = true;
+
+    protected int lineModeMaxLength = -1;
+
+    protected Vector3 downPos;
+
+    private bool cellChangedSinceDown;
+
+    private VirtualInputModule currentVirtualInputInUse;
+
+    public bool Dragging => dragging;
+
+    protected virtual Mode GetMode()
+    {
+        return mode;
+    }
+
+    protected override void OnActivateTool()
+    {
+        base.OnActivateTool();
+        dragging = false;
+        SetMode(mode);
+    }
+
+    protected override void OnDeactivateTool(InterfaceTool new_tool)
+    {
+        if (KScreenManager.Instance != null)
+        {
+            KScreenManager.Instance.SetEventSystemEnabled(state: true);
+        }
+
+        if (KInputManager.currentControllerIsGamepad)
+        {
+            SetCurrentVirtualInputModuleMousMovementMode(mouseMovementOnly: false);
+        }
+
+        RemoveCurrentAreaText();
+        base.OnDeactivateTool(new_tool);
+    }
+
+    protected override void OnPrefabInit()
+    {
+        Game.Instance.Subscribe(1634669191, OnTutorialOpened);
+        base.OnPrefabInit();
+        if (visualizer != null)
+        {
+            visualizer = Util.KInstantiate(visualizer);
+        }
+
+        if (areaVisualizer != null)
+        {
+            areaVisualizer = Util.KInstantiate(areaVisualizer);
+            areaVisualizer.SetActive(value: false);
+            areaVisualizerSpriteRenderer = areaVisualizer.GetComponent<SpriteRenderer>();
+            areaVisualizer.transform.SetParent(base.transform);
+            areaVisualizer.GetComponent<Renderer>().material.color = areaColour;
+        }
+    }
+
+    protected override void OnCmpEnable()
+    {
+        dragging = false;
+    }
+
+    protected override void OnCmpDisable()
+    {
+        if (visualizer != null)
+        {
+            visualizer.SetActive(value: false);
+        }
+
+        if (areaVisualizer != null)
+        {
+            areaVisualizer.SetActive(value: false);
+        }
+    }
+
+    public override void OnLeftClickDown(Vector3 cursor_pos)
+    {
+        cursor_pos = ClampPositionToWorld(cursor_pos, ClusterManager.Instance.activeWorld);
+        dragging = true;
+        downPos = cursor_pos;
+        cellChangedSinceDown = false;
+        previousCursorPos = cursor_pos;
+        if (currentVirtualInputInUse != null)
+        {
+            currentVirtualInputInUse.mouseMovementOnly = false;
+            currentVirtualInputInUse = null;
+        }
+
+        if (!KInputManager.currentControllerIsGamepad)
+        {
+            KScreenManager.Instance.SetEventSystemEnabled(state: false);
+        }
+        else
+        {
+            _ = UnityEngine.EventSystems.EventSystem.current;
+            SetCurrentVirtualInputModuleMousMovementMode(mouseMovementOnly: true, delegate (VirtualInputModule module)
+            {
+                currentVirtualInputInUse = module;
+            });
+        }
+
+        hasFocus = true;
+        RemoveCurrentAreaText();
+        if (areaVisualizerTextPrefab != null)
+        {
+            areaVisualizerText = NameDisplayScreen.Instance.AddAreaText("", areaVisualizerTextPrefab);
+            ((Graphic)(object)NameDisplayScreen.Instance.GetWorldText(areaVisualizerText).GetComponent<LocText>()).color = areaColour;
+        }
+
+        switch (GetMode())
+        {
+            case Mode.Brush:
+                if (visualizer != null)
+                {
+                    AddDragPoint(cursor_pos);
+                }
+
+                break;
+            case Mode.Box:
+            case Mode.Line:
+                if (visualizer != null)
+                {
+                    visualizer.SetActive(value: false);
+                }
+
+                if (areaVisualizer != null)
+                {
+                    areaVisualizer.SetActive(value: true);
+                    areaVisualizer.transform.SetPosition(cursor_pos);
+                    areaVisualizerSpriteRenderer.size = new Vector2(0.01f, 0.01f);
+                }
+
+                break;
+        }
+    }
+
+    public void RemoveCurrentAreaText()
+    {
+        if (areaVisualizerText != Guid.Empty)
+        {
+            NameDisplayScreen.Instance.RemoveWorldText(areaVisualizerText);
+            areaVisualizerText = Guid.Empty;
+        }
+    }
+
+    public void CancelDragging()
+    {
+        KScreenManager.Instance.SetEventSystemEnabled(state: true);
+        if (currentVirtualInputInUse != null)
+        {
+            currentVirtualInputInUse.mouseMovementOnly = false;
+            currentVirtualInputInUse = null;
+        }
+
+        if (KInputManager.currentControllerIsGamepad)
+        {
+            SetCurrentVirtualInputModuleMousMovementMode(mouseMovementOnly: false);
+        }
+
+        dragAxis = DragAxis.Invalid;
+        if (dragging)
+        {
+            dragging = false;
+            RemoveCurrentAreaText();
+            Mode mode = GetMode();
+            if ((mode == Mode.Box || mode == Mode.Line) && areaVisualizer != null)
+            {
+                areaVisualizer.SetActive(value: false);
+            }
+        }
+    }
+
+    public override void OnLeftClickUp(Vector3 cursor_pos)
+    {
+        KScreenManager.Instance.SetEventSystemEnabled(state: true);
+        if (currentVirtualInputInUse != null)
+        {
+            currentVirtualInputInUse.mouseMovementOnly = false;
+            currentVirtualInputInUse = null;
+        }
+
+        if (KInputManager.currentControllerIsGamepad)
+        {
+            SetCurrentVirtualInputModuleMousMovementMode(mouseMovementOnly: false);
+        }
+
+        dragAxis = DragAxis.Invalid;
+        if (!dragging)
+        {
+            return;
+        }
+
+        dragging = false;
+        cursor_pos = ClampPositionToWorld(cursor_pos, ClusterManager.Instance.activeWorld);
+        RemoveCurrentAreaText();
+        Mode mode = GetMode();
+        if (mode == Mode.Line || Input.GetKey((KeyCode)Global.GetInputManager().GetDefaultController().GetInputForAction(Action.DragStraight)))
+        {
+            cursor_pos = SnapToLine(cursor_pos);
+        }
+
+        if ((mode != Mode.Box && mode != Mode.Line) || !(areaVisualizer != null))
+        {
+            return;
+        }
+
+        areaVisualizer.SetActive(value: false);
+        Grid.PosToXY(downPos, out var x, out var y);
+        int num = x;
+        int num2 = y;
+        Grid.PosToXY(cursor_pos, out var x2, out var y2);
+        if (x2 < x)
+        {
+            Util.Swap(ref x, ref x2);
+        }
+
+        if (y2 < y)
+        {
+            Util.Swap(ref y, ref y2);
+        }
+
+        for (int i = y; i <= y2; i++)
+        {
+            for (int j = x; j <= x2; j++)
+            {
+                int cell = Grid.XYToCell(j, i);
+                if (Grid.IsValidCell(cell) && Grid.IsVisible(cell))
+                {
+                    int value = i - num2;
+                    int value2 = j - num;
+                    value = Mathf.Abs(value);
+                    value2 = Mathf.Abs(value2);
+                    OnDragTool(cell, value + value2);
+                }
+            }
+        }
+
+        KMonoBehaviour.PlaySound(GlobalAssets.GetSound(GetConfirmSound()));
+        OnDragComplete(downPos, cursor_pos);
+    }
+
+    protected virtual string GetConfirmSound()
+    {
+        return "Tile_Confirm";
+    }
+
+    protected virtual string GetDragSound()
+    {
+        return "Tile_Drag";
+    }
+
+    public override string GetDeactivateSound()
+    {
+        return "Tile_Cancel";
+    }
+
+    protected Vector3 ClampPositionToWorld(Vector3 position, WorldContainer world)
+    {
+        position.x = Mathf.Clamp(position.x, world.minimumBounds.x, world.maximumBounds.x);
+        position.y = Mathf.Clamp(position.y, world.minimumBounds.y, world.maximumBounds.y);
+        return position;
+    }
+
+    protected Vector3 SnapToLine(Vector3 cursorPos)
+    {
+        Vector3 vector = cursorPos - downPos;
+        if (canChangeDragAxis || (!canChangeDragAxis && !cellChangedSinceDown) || dragAxis == DragAxis.Invalid)
+        {
+            dragAxis = DragAxis.Invalid;
+            if (Mathf.Abs(vector.x) < Mathf.Abs(vector.y))
+            {
+                dragAxis = DragAxis.Vertical;
+            }
+            else
+            {
+                dragAxis = DragAxis.Horizontal;
+            }
+        }
+
+        switch (dragAxis)
+        {
+            case DragAxis.Horizontal:
+                cursorPos.y = downPos.y;
+                if (lineModeMaxLength != -1 && Mathf.Abs(vector.x) > (float)(lineModeMaxLength - 1))
+                {
+                    cursorPos.x = downPos.x + Mathf.Sign(vector.x) * (float)(lineModeMaxLength - 1);
+                }
+
+                break;
+            case DragAxis.Vertical:
+                cursorPos.x = downPos.x;
+                if (lineModeMaxLength != -1 && Mathf.Abs(vector.y) > (float)(lineModeMaxLength - 1))
+                {
+                    cursorPos.y = downPos.y + Mathf.Sign(vector.y) * (float)(lineModeMaxLength - 1);
+                }
+
+                break;
+        }
+
+        return cursorPos;
+    }
+
+    public override void OnMouseMove(Vector3 cursorPos)
+    {
+        //IL_0222: Unknown result type (might be due to invalid IL or missing references)
+        //IL_0227: Unknown result type (might be due to invalid IL or missing references)
+        //IL_0234: Unknown result type (might be due to invalid IL or missing references)
+        //IL_023a: Unknown result type (might be due to invalid IL or missing references)
+        cursorPos = ClampPositionToWorld(cursorPos, ClusterManager.Instance.activeWorld);
+        if (dragging && (Input.GetKey((KeyCode)Global.GetInputManager().GetDefaultController().GetInputForAction(Action.DragStraight)) || GetMode() == Mode.Line))
+        {
+            cursorPos = SnapToLine(cursorPos);
+        }
+        else
+        {
+            dragAxis = DragAxis.Invalid;
+        }
+
+        base.OnMouseMove(cursorPos);
+        if (!dragging)
+        {
+            return;
+        }
+
+        if (Grid.PosToCell(cursorPos) != Grid.PosToCell(downPos))
+        {
+            cellChangedSinceDown = true;
+        }
+
+        switch (GetMode())
+        {
+            case Mode.Brush:
+                AddDragPoints(cursorPos, previousCursorPos);
+                if (areaVisualizerText != Guid.Empty)
+                {
+                    int dragLength = GetDragLength();
+                    LocText component2 = NameDisplayScreen.Instance.GetWorldText(areaVisualizerText).GetComponent<LocText>();
+                    ((TMP_Text)component2).text = string.Format(UI.TOOLS.TOOL_LENGTH_FMT, dragLength);
+                    Vector3 position3 = Grid.CellToPos(Grid.PosToCell(cursorPos));
+                    position3 += new Vector3(0f, 1f, 0f);
+                    ((TMP_Text)component2).transform.SetPosition(position3);
+                }
+
+                break;
+            case Mode.Box:
+            case Mode.Line:
+                {
+                    Vector2 input = Vector3.Max(downPos, cursorPos);
+                    Vector2 input2 = Vector3.Min(downPos, cursorPos);
+                    input = GetWorldRestrictedPosition(input);
+                    input2 = GetWorldRestrictedPosition(input2);
+                    input = GetRegularizedPos(input, minimize: false);
+                    input2 = GetRegularizedPos(input2, minimize: true);
+                    Vector2 vector = input - input2;
+                    Vector2 vector2 = (input + input2) * 0.5f;
+                    areaVisualizer.transform.SetPosition(new Vector2(vector2.x, vector2.y));
+                    int num = (int)(input.x - input2.x + (input.y - input2.y) - 1f);
+                    if (areaVisualizerSpriteRenderer.size != vector)
+                    {
+                        string sound = GlobalAssets.GetSound(GetDragSound());
+                        if (sound != null)
+                        {
+                            Vector3 position = areaVisualizer.transform.GetPosition();
+                            position.z = 0f;
+                            EventInstance instance = SoundEvent.BeginOneShot(sound, position);
+                            ((EventInstance)(ref instance)).setParameterByName("tileCount", (float)num, false);
+                            SoundEvent.EndOneShot(instance);
+                        }
+                    }
+
+                    areaVisualizerSpriteRenderer.size = vector;
+                    if (areaVisualizerText != Guid.Empty)
+                    {
+                        Vector2I vector2I = new Vector2I(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y));
+                        LocText component = NameDisplayScreen.Instance.GetWorldText(areaVisualizerText).GetComponent<LocText>();
+                        ((TMP_Text)component).text = string.Format(UI.TOOLS.TOOL_AREA_FMT, vector2I.x, vector2I.y, vector2I.x * vector2I.y);
+                        TransformExtensions.SetPosition(position: vector2, transform: ((TMP_Text)component).transform);
+                    }
+
+                    break;
+                }
+        }
+
+        previousCursorPos = cursorPos;
+    }
+
+    protected virtual void OnDragTool(int cell, int distFromOrigin)
+    {
+    }
+
+    protected virtual void OnDragComplete(Vector3 cursorDown, Vector3 cursorUp)
+    {
+    }
+
+    protected virtual int GetDragLength()
+    {
+        return 0;
+    }
+
+    private void AddDragPoint(Vector3 cursorPos)
+    {
+        cursorPos = ClampPositionToWorld(cursorPos, ClusterManager.Instance.activeWorld);
+        int cell = Grid.PosToCell(cursorPos);
+        if (Grid.IsValidCell(cell) && Grid.IsVisible(cell))
+        {
+            OnDragTool(cell, 0);
+        }
+    }
+
+    private void AddDragPoints(Vector3 cursorPos, Vector3 previousCursorPos)
+    {
+        cursorPos = ClampPositionToWorld(cursorPos, ClusterManager.Instance.activeWorld);
+        Vector3 vector = cursorPos - previousCursorPos;
+        float magnitude = vector.magnitude;
+        float num = Grid.CellSizeInMeters * 0.25f;
+        int num2 = 1 + (int)(magnitude / num);
+        vector.Normalize();
+        for (int i = 0; i < num2; i++)
+        {
+            Vector3 cursorPos2 = previousCursorPos + vector * ((float)i * num);
+            AddDragPoint(cursorPos2);
+        }
+    }
+
+    public override void OnKeyDown(KButtonEvent e)
+    {
+        if (interceptNumberKeysForPriority)
+        {
+            HandlePriortyKeysDown(e);
+        }
+
+        if (!e.Consumed)
+        {
+            base.OnKeyDown(e);
+        }
+    }
+
+    public override void OnKeyUp(KButtonEvent e)
+    {
+        if (interceptNumberKeysForPriority)
+        {
+            HandlePriorityKeysUp(e);
+        }
+
+        if (!e.Consumed)
+        {
+            base.OnKeyUp(e);
+        }
+    }
+
+    private void HandlePriortyKeysDown(KButtonEvent e)
+    {
+        Action action = e.GetAction();
+        if (Action.Plan1 <= action && action <= Action.Plan10 && e.TryConsume(action))
+        {
+            int num = (int)(action - 36 + 1);
+            if (num <= 9)
+            {
+                ToolMenu.Instance.PriorityScreen.SetScreenPriority(new PrioritySetting(PriorityScreen.PriorityClass.basic, num), play_sound: true);
+            }
+            else
+            {
+                ToolMenu.Instance.PriorityScreen.SetScreenPriority(new PrioritySetting(PriorityScreen.PriorityClass.topPriority, 1), play_sound: true);
+            }
+        }
+    }
+
+    private void HandlePriorityKeysUp(KButtonEvent e)
+    {
+        Action action = e.GetAction();
+        if (Action.Plan1 <= action && action <= Action.Plan10)
+        {
+            e.TryConsume(action);
+        }
+    }
+
+    protected void SetMode(Mode newMode)
+    {
+        mode = newMode;
+        switch (mode)
+        {
+            case Mode.Brush:
+                if (areaVisualizer != null)
+                {
+                    areaVisualizer.SetActive(value: false);
+                }
+
+                if (visualizer != null)
+                {
+                    visualizer.SetActive(value: true);
+                }
+
+                SetCursor(cursor, cursorOffset, CursorMode.Auto);
+                break;
+            case Mode.Box:
+                if (visualizer != null)
+                {
+                    visualizer.SetActive(value: true);
+                }
+
+                mode = Mode.Box;
+                SetCursor(boxCursor, cursorOffset, CursorMode.Auto);
+                break;
+            case Mode.Line:
+                if (visualizer != null)
+                {
+                    visualizer.SetActive(value: true);
+                }
+
+                mode = Mode.Line;
+                SetCursor(boxCursor, cursorOffset, CursorMode.Auto);
+                break;
+        }
+    }
+
+    public override void OnFocus(bool focus)
+    {
+        switch (GetMode())
+        {
+            case Mode.Brush:
+                if (visualizer != null)
+                {
+                    visualizer.SetActive(focus);
+                }
+
+                hasFocus = focus;
+                break;
+            case Mode.Box:
+            case Mode.Line:
+                if (visualizer != null && !dragging)
+                {
+                    visualizer.SetActive(focus);
+                }
+
+                hasFocus = focus || dragging;
+                break;
+        }
+    }
+
+    private void OnTutorialOpened(object data)
+    {
+        dragging = false;
+    }
+
+    public override bool ShowHoverUI()
+    {
+        if (!dragging)
+        {
+            return base.ShowHoverUI();
+        }
+
+        return true;
+    }
+}
+
+
+public class InterfaceTool : KMonoBehaviour
+{
+    public struct Intersection
+    {
+        public MonoBehaviour component;
+
+        public float distance;
+    }
+
+    private static Dictionary<Action, InterfaceToolConfig> interfaceConfigMap = null;
+
+    private static List<InterfaceToolConfig> activeConfigs = new List<InterfaceToolConfig>();
+
+    public const float MaxClickDistance = 0.02f;
+
+    public const float DepthBias = -0.15f;
+
+    public GameObject visualizer;
+
+    public Grid.SceneLayer visualizerLayer = Grid.SceneLayer.Move;
+
+    public string placeSound;
+
+    protected bool populateHitsList;
+
+    [NonSerialized]
+    public bool hasFocus;
+
+    [SerializeField]
+    protected Texture2D cursor;
+
+    public Vector2 cursorOffset = new Vector2(2f, 2f);
+
+    public System.Action OnDeactivate;
+
+    private static Texture2D activeCursor = null;
+
+    private static HashedString toolActivatedViewMode = OverlayModes.None.ID;
+
+    protected HashedString viewMode = OverlayModes.None.ID;
+
+    private HoverTextConfiguration hoverTextConfiguration;
+
+    private KSelectable hoverOverride;
+
+    public KSelectable hover;
+
+    protected int layerMask;
+
+    protected SelectMarker selectMarker;
+
+    private List<RaycastResult> castResults = new List<RaycastResult>();
+
+    private bool isAppFocused = true;
+
+    private List<KSelectable> hits = new List<KSelectable>();
+
+    protected bool playedSoundThisFrame;
+
+    private List<Intersection> intersections = new List<Intersection>();
+
+    private HashSet<Component> prevIntersectionGroup = new HashSet<Component>();
+
+    private HashSet<Component> curIntersectionGroup = new HashSet<Component>();
+
+    private int hitCycleCount;
+
+    public static InterfaceToolConfig ActiveConfig
+    {
+        get
+        {
+            if (interfaceConfigMap == null)
+            {
+                InitializeConfigs(Action.Invalid, null);
+            }
+
+            return activeConfigs[activeConfigs.Count - 1];
+        }
+    }
+
+    public HashedString ViewMode => viewMode;
+
+    public static void ToggleConfig(Action configKey)
+    {
+        if (interfaceConfigMap == null)
+        {
+            InitializeConfigs(Action.Invalid, null);
+        }
+
+        if (!interfaceConfigMap.TryGetValue(configKey, out var value))
+        {
+            Debug.LogWarning($"[InterfaceTool] No config is associated with Key: {configKey}!" + " Are you sure the configs were initialized properly!");
+        }
+        else if (activeConfigs.BinarySearch(value, InterfaceToolConfig.ConfigComparer) <= 0)
+        {
+            Debug.Log($"[InterfaceTool] Pushing config with key: {configKey}");
+            activeConfigs.Add(value);
+            activeConfigs.Sort(InterfaceToolConfig.ConfigComparer);
+        }
+        else
+        {
+            Debug.Log($"[InterfaceTool] Popping config with key: {configKey}");
+            activeConfigs.Remove(value);
+        }
+    }
+
+    public static void InitializeConfigs(Action defaultKey, List<InterfaceToolConfig> configs)
+    {
+        string arg = ((configs == null) ? "null" : configs.Count.ToString());
+        Debug.Log($"[InterfaceTool] Initializing configs with values of DefaultKey: {defaultKey} Configs: {arg}");
+        if (configs == null || configs.Count == 0)
+        {
+            InterfaceToolConfig interfaceToolConfig = ScriptableObject.CreateInstance<InterfaceToolConfig>();
+            interfaceConfigMap = new Dictionary<Action, InterfaceToolConfig>();
+            interfaceConfigMap[interfaceToolConfig.InputAction] = interfaceToolConfig;
+        }
+        else
+        {
+            interfaceConfigMap = configs.ToDictionary((InterfaceToolConfig x) => x.InputAction);
+            ToggleConfig(defaultKey);
+        }
+    }
+
+    protected override void OnSpawn()
+    {
+        base.OnSpawn();
+        hoverTextConfiguration = GetComponent<HoverTextConfiguration>();
+    }
+
+    public void ActivateTool()
+    {
+        OnActivateTool();
+        OnMouseMove(PlayerController.GetCursorPos(KInputManager.GetMousePos()));
+        Game.Instance.Trigger(1174281782, this);
+    }
+
+    public virtual bool ShowHoverUI()
+    {
+        if (ManagementMenu.Instance == null || ManagementMenu.Instance.IsFullscreenUIActive())
+        {
+            return false;
+        }
+
+        Vector3 pos = Camera.main.ScreenToWorldPoint(KInputManager.GetMousePos());
+        if (OverlayScreen.Instance == null || !ClusterManager.Instance.IsPositionInActiveWorld(pos) || pos.x < 0f || pos.x > Grid.WidthInMeters || pos.y < 0f || pos.y > Grid.HeightInMeters)
+        {
+            return false;
+        }
+
+        UnityEngine.EventSystems.EventSystem current = UnityEngine.EventSystems.EventSystem.current;
+        if (current != null)
+        {
+            return !current.IsPointerOverGameObject();
+        }
+
+        return false;
+    }
+
+    protected virtual void OnActivateTool()
+    {
+        if (OverlayScreen.Instance != null && viewMode != OverlayModes.None.ID && OverlayScreen.Instance.mode != viewMode)
+        {
+            OverlayScreen.Instance.ToggleOverlay(viewMode);
+            toolActivatedViewMode = viewMode;
+        }
+
+        SetCursor(cursor, cursorOffset, CursorMode.Auto);
+    }
+
+    public void SetCurrentVirtualInputModuleMousMovementMode(bool mouseMovementOnly, Action<VirtualInputModule> extraActions = null)
+    {
+        UnityEngine.EventSystems.EventSystem current = UnityEngine.EventSystems.EventSystem.current;
+        if (current != null && current.currentInputModule != null)
+        {
+            VirtualInputModule virtualInputModule = current.currentInputModule as VirtualInputModule;
+            if (virtualInputModule != null)
+            {
+                virtualInputModule.mouseMovementOnly = mouseMovementOnly;
+                extraActions?.Invoke(virtualInputModule);
+            }
+        }
+    }
+
+    public void DeactivateTool(InterfaceTool new_tool = null)
+    {
+        OnDeactivateTool(new_tool);
+        if ((new_tool == null || new_tool == SelectTool.Instance) && toolActivatedViewMode != OverlayModes.None.ID && toolActivatedViewMode == SimDebugView.Instance.GetMode())
+        {
+            OverlayScreen.Instance.ToggleOverlay(OverlayModes.None.ID);
+            toolActivatedViewMode = OverlayModes.None.ID;
+        }
+    }
+
+    public virtual void GetOverlayColorData(out HashSet<ToolMenu.CellColorData> colors)
+    {
+        colors = null;
+    }
+
+    protected virtual void OnDeactivateTool(InterfaceTool new_tool)
+    {
+    }
+
+    private void OnApplicationFocus(bool focusStatus)
+    {
+        isAppFocused = focusStatus;
+    }
+
+    public virtual string GetDeactivateSound()
+    {
+        return "Tile_Cancel";
+    }
+
+    public virtual void OnMouseMove(Vector3 cursor_pos)
+    {
+        if (!(visualizer == null) && isAppFocused)
+        {
+            cursor_pos = Grid.CellToPosCBC(Grid.PosToCell(cursor_pos), visualizerLayer);
+            cursor_pos.z += -0.15f;
+            visualizer.transform.SetLocalPosition(cursor_pos);
+        }
+    }
+
+    public virtual void OnKeyDown(KButtonEvent e)
+    {
+    }
+
+    public virtual void OnKeyUp(KButtonEvent e)
+    {
+    }
+
+    public virtual void OnLeftClickDown(Vector3 cursor_pos)
+    {
+    }
+
+    public virtual void OnLeftClickUp(Vector3 cursor_pos)
+    {
+    }
+
+    public virtual void OnRightClickDown(Vector3 cursor_pos, KButtonEvent e)
+    {
+    }
+
+    public virtual void OnRightClickUp(Vector3 cursor_pos)
+    {
+    }
+
+    public virtual void OnFocus(bool focus)
+    {
+        if (visualizer != null)
+        {
+            visualizer.SetActive(focus);
+        }
+
+        hasFocus = focus;
+    }
+
+    protected Vector2 GetRegularizedPos(Vector2 input, bool minimize)
+    {
+        Vector3 vector = new Vector3(Grid.HalfCellSizeInMeters, Grid.HalfCellSizeInMeters, 0f);
+        return Grid.CellToPosCCC(Grid.PosToCell(input), Grid.SceneLayer.Background) + (minimize ? (-vector) : vector);
+    }
+
+    protected Vector2 GetWorldRestrictedPosition(Vector2 input)
+    {
+        input.x = Mathf.Clamp(input.x, ClusterManager.Instance.activeWorld.minimumBounds.x, ClusterManager.Instance.activeWorld.maximumBounds.x);
+        input.y = Mathf.Clamp(input.y, ClusterManager.Instance.activeWorld.minimumBounds.y, ClusterManager.Instance.activeWorld.maximumBounds.y);
+        return input;
+    }
+
+    protected void SetCursor(Texture2D new_cursor, Vector2 offset, CursorMode mode)
+    {
+        if (!(new_cursor != activeCursor) || !(new_cursor != null))
+        {
+            return;
+        }
+
+        activeCursor = new_cursor;
+        try
+        {
+            Cursor.SetCursor(new_cursor, offset, mode);
+            if (PlayerController.Instance.vim != null)
+            {
+                PlayerController.Instance.vim.SetCursor(new_cursor);
+            }
+        }
+        catch (Exception ex)
+        {
+            string details = $"SetCursor Failed new_cursor={new_cursor} offset={offset} mode={mode}";
+            KCrashReporter.ReportDevNotification("SetCursor Failed", ex.StackTrace, details);
+        }
+    }
+
+    protected void UpdateHoverElements(List<KSelectable> hits)
+    {
+        if (hoverTextConfiguration != null)
+        {
+            hoverTextConfiguration.UpdateHoverElements(hits);
+        }
+    }
+
+    public virtual void LateUpdate()
+    {
+        if (populateHitsList)
+        {
+            if (!isAppFocused || !Grid.IsValidCell(Grid.PosToCell(Camera.main.ScreenToWorldPoint(KInputManager.GetMousePos()))))
+            {
+                return;
+            }
+
+            hits.Clear();
+            GetSelectablesUnderCursor(hits);
+            KSelectable objectUnderCursor = GetObjectUnderCursor(cycleSelection: false, (KSelectable s) => s.GetComponent<KSelectable>().IsSelectable);
+            UpdateHoverElements(hits);
+            if (!hasFocus && hoverOverride == null)
+            {
+                ClearHover();
+            }
+            else if (objectUnderCursor != hover)
+            {
+                ClearHover();
+                hover = objectUnderCursor;
+                if (objectUnderCursor != null)
+                {
+                    Game.Instance.Trigger(2095258329, objectUnderCursor.gameObject);
+                    objectUnderCursor.Hover(!playedSoundThisFrame);
+                    playedSoundThisFrame = true;
+                }
+            }
+
+            playedSoundThisFrame = false;
+        }
+        else
+        {
+            UpdateHoverElements(null);
+        }
+    }
+
+    public void GetSelectablesUnderCursor(List<KSelectable> hits)
+    {
+        if (hoverOverride != null)
+        {
+            hits.Add(hoverOverride);
+        }
+
+        Camera main = Camera.main;
+        Vector3 position = new Vector3(KInputManager.GetMousePos().x, KInputManager.GetMousePos().y, 0f - main.transform.GetPosition().z);
+        Vector3 pos = main.ScreenToWorldPoint(position);
+        Vector2 pos2 = new Vector2(pos.x, pos.y);
+        int cell = Grid.PosToCell(pos);
+        if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
+        {
+            return;
+        }
+
+        Game.Instance.statusItemRenderer.GetIntersections(pos2, hits);
+        ListPool<ScenePartitionerEntry, SelectTool>.PooledList pooledList = ListPool<ScenePartitionerEntry, SelectTool>.Allocate();
+        GameScenePartitioner.Instance.GatherEntries((int)pos2.x, (int)pos2.y, 1, 1, GameScenePartitioner.Instance.collisionLayer, pooledList);
+        pooledList.Sort((ScenePartitionerEntry x, ScenePartitionerEntry y) => SortHoverCards(x, y));
+        foreach (ScenePartitionerEntry item in pooledList)
+        {
+            KCollider2D kCollider2D = item.obj as KCollider2D;
+            if (!(kCollider2D == null) && kCollider2D.Intersects(new Vector2(pos2.x, pos2.y)))
+            {
+                KSelectable kSelectable = kCollider2D.GetComponent<KSelectable>();
+                if (kSelectable == null)
+                {
+                    kSelectable = kCollider2D.GetComponentInParent<KSelectable>();
+                }
+
+                if (!(kSelectable == null) && kSelectable.isActiveAndEnabled && !hits.Contains(kSelectable) && kSelectable.IsSelectable)
+                {
+                    hits.Add(kSelectable);
+                }
+            }
+        }
+
+        pooledList.Recycle();
+    }
+
+    public void SetLinkCursor(bool set)
+    {
+        SetCursor(set ? Assets.GetTexture("cursor_hand") : cursor, set ? Vector2.zero : cursorOffset, CursorMode.Auto);
+    }
+
+    protected T GetObjectUnderCursor<T>(bool cycleSelection, Func<T, bool> condition = null, Component previous_selection = null) where T : MonoBehaviour
+    {
+        intersections.Clear();
+        GetObjectUnderCursor2D(intersections, condition, layerMask);
+        intersections.RemoveAll(is_component_null);
+        if (intersections.Count <= 0)
+        {
+            prevIntersectionGroup.Clear();
+            return null;
+        }
+
+        curIntersectionGroup.Clear();
+        foreach (Intersection intersection in intersections)
+        {
+            curIntersectionGroup.Add(intersection.component);
+        }
+
+        if (!prevIntersectionGroup.Equals(curIntersectionGroup))
+        {
+            hitCycleCount = 0;
+            prevIntersectionGroup = curIntersectionGroup;
+        }
+
+        intersections.Sort((Intersection a, Intersection b) => SortSelectables(a.component as KMonoBehaviour, b.component as KMonoBehaviour));
+        int index = 0;
+        if (cycleSelection)
+        {
+            index = hitCycleCount % intersections.Count;
+            if (intersections[index].component != previous_selection || previous_selection == null)
+            {
+                index = 0;
+                hitCycleCount = 0;
+            }
+            else
+            {
+                index = ++hitCycleCount % intersections.Count;
+            }
+        }
+
+        return intersections[index].component as T;
+    }
+
+    private void GetObjectUnderCursor2D<T>(List<Intersection> intersections, Func<T, bool> condition, int layer_mask) where T : MonoBehaviour
+    {
+        Camera main = Camera.main;
+        Vector3 position = new Vector3(KInputManager.GetMousePos().x, KInputManager.GetMousePos().y, 0f - main.transform.GetPosition().z);
+        Vector3 pos = main.ScreenToWorldPoint(position);
+        Vector2 pos2 = new Vector2(pos.x, pos.y);
+        if (hoverOverride != null)
+        {
+            intersections.Add(new Intersection
+            {
+                component = hoverOverride,
+                distance = -100f
+            });
+        }
+
+        int cell = Grid.PosToCell(pos);
+        if (!Grid.IsValidCell(cell) || !Grid.IsVisible(cell))
+        {
+            return;
+        }
+
+        Game.Instance.statusItemRenderer.GetIntersections(pos2, intersections);
+        ListPool<ScenePartitionerEntry, SelectTool>.PooledList pooledList = ListPool<ScenePartitionerEntry, SelectTool>.Allocate();
+        int x = 0;
+        int y = 0;
+        Grid.CellToXY(cell, out x, out y);
+        GameScenePartitioner.Instance.GatherEntries(x, y, 1, 1, GameScenePartitioner.Instance.collisionLayer, pooledList);
+        foreach (ScenePartitionerEntry item in pooledList)
+        {
+            KCollider2D kCollider2D = item.obj as KCollider2D;
+            if (kCollider2D == null || !kCollider2D.Intersects(new Vector2(pos.x, pos.y)))
+            {
+                continue;
+            }
+
+            T val = kCollider2D.GetComponent<T>();
+            if (val == null)
+            {
+                val = kCollider2D.GetComponentInParent<T>();
+            }
+
+            if (val == null || ((1 << val.gameObject.layer) & layer_mask) == 0 || val == null || (condition != null && !condition(val)))
+            {
+                continue;
+            }
+
+            float num = val.transform.GetPosition().z - pos.z;
+            bool flag = false;
+            for (int i = 0; i < intersections.Count; i++)
+            {
+                Intersection value = intersections[i];
+                if (value.component.gameObject == val.gameObject)
+                {
+                    value.distance = Mathf.Min(value.distance, num);
+                    intersections[i] = value;
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!flag)
+            {
+                intersections.Add(new Intersection
+                {
+                    component = val,
+                    distance = num
+                });
+            }
+        }
+
+        pooledList.Recycle();
+    }
+
+    private int SortSelectables(KMonoBehaviour x, KMonoBehaviour y)
+    {
+        if (x == null && y == null)
+        {
+            return 0;
+        }
+
+        if (x == null)
+        {
+            return -1;
+        }
+
+        if (y == null)
+        {
+            return 1;
+        }
+
+        int num = x.transform.GetPosition().z.CompareTo(y.transform.GetPosition().z);
+        if (num != 0)
+        {
+            return num;
+        }
+
+        return x.GetInstanceID().CompareTo(y.GetInstanceID());
+    }
+
+    public void SetHoverOverride(KSelectable hover_override)
+    {
+        hoverOverride = hover_override;
+    }
+
+    private int SortHoverCards(ScenePartitionerEntry x, ScenePartitionerEntry y)
+    {
+        KMonoBehaviour x2 = x.obj as KMonoBehaviour;
+        KMonoBehaviour y2 = y.obj as KMonoBehaviour;
+        return SortSelectables(x2, y2);
+    }
+
+    private static bool is_component_null(Intersection intersection)
+    {
+        return !intersection.component;
+    }
+
+    protected void ClearHover()
+    {
+        if (hover != null)
+        {
+            KSelectable kSelectable = hover;
+            hover = null;
+            kSelectable.Unhover();
+            Game.Instance.Trigger(-1201923725);
+        }
+    }
+}
+
+public class KMonoBehaviour : MonoBehaviour, IStateMachineTarget, ISaveLoadable, IUniformGridObject
+{
+    public static GameObject lastGameObject;
+
+    public static KObject lastObj;
+
+    public static bool isPoolPreInit;
+
+    public static bool isLoadingScene;
+
+    private KObject obj;
+
+    private bool isInitialized;
+
+    protected bool autoRegisterSimRender = true;
+
+    protected bool simRenderLoadBalance;
+
+    public bool isSpawned { get; private set; }
+
+    public new Transform transform => base.transform;
+
+    public bool isNull => this == null;
+
+    public void Awake()
+    {
+        if (!App.IsExiting)
+        {
+            InitializeComponent();
+        }
+    }
+
+    public void InitializeComponent()
+    {
+        if (isInitialized)
+        {
+            return;
+        }
+
+        if (!isPoolPreInit && Application.isPlaying && lastGameObject != base.gameObject)
+        {
+            lastGameObject = base.gameObject;
+            lastObj = KObjectManager.Instance.GetOrCreateObject(base.gameObject);
+        }
+
+        obj = lastObj;
+        isInitialized = true;
+        MyAttributes.OnAwake(this);
+        if (isPoolPreInit)
+        {
+            return;
+        }
+
+        try
+        {
+            OnPrefabInit();
+        }
+        catch (Exception ex)
+        {
+            string msg = "Error in " + base.name + "." + GetType().Name + ".OnPrefabInit at " + transform.position.ToString();
+            DebugUtil.LogExceptionCallstack(this, msg, ex.ToString(), ex);
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (!App.IsExiting)
+        {
+            OnCmpEnable();
+        }
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (!App.IsExiting && !isLoadingScene)
+        {
+            OnCmpDisable();
+        }
+    }
+
+    public bool IsInitialized()
+    {
+        return isInitialized;
+    }
+
+    public void OnDestroy()
+    {
+        OnForcedCleanUp();
+        if (App.IsExiting)
+        {
+            return;
+        }
+
+        if (isLoadingScene)
+        {
+            OnLoadLevel();
+            return;
+        }
+
+        if (KObjectManager.Instance != null && !base.gameObject.activeSelf)
+        {
+            KObjectManager.Instance.QueueDestroy(obj);
+        }
+
+        OnCleanUp();
+        SimAndRenderScheduler.instance.Remove(this);
+    }
+
+    public void Start()
+    {
+        if (!App.IsExiting)
+        {
+            Spawn();
+        }
+    }
+
+    public void Spawn()
+    {
+        if (isSpawned)
+        {
+            return;
+        }
+
+        if (!isInitialized)
+        {
+            Debug.LogError(base.name + "." + GetType().Name + " is not initialized.");
+            return;
+        }
+
+        isSpawned = true;
+        if (autoRegisterSimRender)
+        {
+            SimAndRenderScheduler.instance.Add(this, simRenderLoadBalance);
+        }
+
+        MyAttributes.OnStart(this);
+        try
+        {
+            OnSpawn();
+        }
+        catch (Exception ex)
+        {
+            string msg = "Error in " + base.name + "." + GetType().Name + ".OnSpawn at " + transform.position.ToString();
+            DebugUtil.LogExceptionCallstack(this, msg, ex.ToString(), ex);
+        }
+    }
+
+    protected virtual void OnPrefabInit()
+    {
+    }
+
+    protected virtual void OnSpawn()
+    {
+    }
+
+    protected virtual void OnCmpEnable()
+    {
+    }
+
+    protected virtual void OnCmpDisable()
+    {
+    }
+
+    protected virtual void OnCleanUp()
+    {
+    }
+
+    protected virtual void OnForcedCleanUp()
+    {
+    }
+
+    protected virtual void OnLoadLevel()
+    {
+    }
+
+    public T FindOrAdd<T>() where T : KMonoBehaviour
+    {
+        return this.FindOrAddComponent<T>();
+    }
+
+    public void FindOrAdd<T>(ref T c) where T : KMonoBehaviour
+    {
+        c = FindOrAdd<T>();
+    }
+
+    public T Require<T>() where T : Component
+    {
+        return this.RequireComponent<T>();
+    }
+
+    public int Subscribe(int hash, Action<object> handler)
+    {
+        return obj.GetEventSystem().Subscribe(hash, handler);
+    }
+
+    public int Subscribe(GameObject target, int hash, Action<object> handler)
+    {
+        return obj.GetEventSystem().Subscribe(target, hash, handler);
+    }
+
+    public int Subscribe<ComponentType>(int hash, EventSystem.IntraObjectHandler<ComponentType> handler) where ComponentType : Component
+    {
+        return obj.GetEventSystem().Subscribe(hash, handler);
+    }
+
+    public void Unsubscribe(int hash, Action<object> handler)
+    {
+        if (obj != null)
+        {
+            obj.GetEventSystem().Unsubscribe(hash, handler);
+        }
+    }
+
+    public void Unsubscribe(int id)
+    {
+        obj.GetEventSystem().Unsubscribe(id);
+    }
+
+    public void Unsubscribe(GameObject target, int hash, Action<object> handler)
+    {
+        obj.GetEventSystem().Unsubscribe(target, hash, handler);
+    }
+
+    public void Unsubscribe<ComponentType>(int hash, EventSystem.IntraObjectHandler<ComponentType> handler, bool suppressWarnings = false) where ComponentType : Component
+    {
+        if (obj != null)
+        {
+            obj.GetEventSystem().Unsubscribe(hash, handler, suppressWarnings);
+        }
+    }
+
+    public void Trigger(int hash, object data = null)
+    {
+        if (obj != null && obj.hasEventSystem)
+        {
+            obj.GetEventSystem().Trigger(base.gameObject, hash, data);
+        }
+    }
+
+    public static void PlaySound(string sound)
+    {
+        if (sound == null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (SoundListenerController.Instance == null)
+            {
+                KFMOD.PlayUISound(sound);
+            }
+            else
+            {
+                KFMOD.PlayOneShot(sound, SoundListenerController.Instance.transform.GetPosition());
+            }
+        }
+        catch
+        {
+            DebugUtil.LogWarningArgs("AUDIOERROR: Missing [" + sound + "]");
+        }
+    }
+
+    public static void PlaySound3DAtLocation(string sound, Vector3 location)
+    {
+        if (SoundListenerController.Instance != null)
+        {
+            try
+            {
+                KFMOD.PlayOneShot(sound, location);
+            }
+            catch
+            {
+                DebugUtil.LogWarningArgs("AUDIOERROR: Missing [" + sound + "]");
+            }
+        }
+    }
+
+    public void PlaySound3D(string asset)
+    {
+        try
+        {
+            KFMOD.PlayOneShot(asset, transform.GetPosition());
+        }
+        catch
+        {
+            DebugUtil.LogWarningArgs("AUDIOERROR: Missing [" + asset + "]");
+        }
+    }
+
+    public virtual Vector2 PosMin()
+    {
+        return transform.GetPosition();
+    }
+
+    public virtual Vector2 PosMax()
+    {
+        return transform.GetPosition();
+    }
+
+    ComponentType IStateMachineTarget.GetComponent<ComponentType>()
+    {
+        return GetComponent<ComponentType>();
+    }
+
+    GameObject IStateMachineTarget.get_gameObject()
+    {
+        return base.gameObject;
+    }
+
+    string IStateMachineTarget.get_name()
+    {
+        return base.name;
+    }
+}

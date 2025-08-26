@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36401.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominoBricks", "DominoBricks\DominoBricks.csproj", "{4527F9F6-7315-4DD6-BCF1-9281BEEF0051}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "封闭施工_清理", "封闭施工_清理\封闭施工_清理.csproj", "{92A88D8C-646F-4A5A-9F4C-9D46CAC9BCE4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		lib\0Harmony.dll = lib\0Harmony.dll
+		lib\Assembly-CSharp-firstpass.dll = lib\Assembly-CSharp-firstpass.dll
+		lib\Assembly-CSharp.dll = lib\Assembly-CSharp.dll
+		lib\PLib.dll = lib\PLib.dll
+		lib\UnityEngine.AnimationModule.dll = lib\UnityEngine.AnimationModule.dll
+		lib\UnityEngine.CoreModule.dll = lib\UnityEngine.CoreModule.dll
+		lib\UnityEngine.dll = lib\UnityEngine.dll
+		lib\UnityEngine.Physics2DModule.dll = lib\UnityEngine.Physics2DModule.dll
+		lib\UnityEngine.UI.dll = lib\UnityEngine.UI.dll
+		lib\UnityEngine.UnityWebRequestModule.dll = lib\UnityEngine.UnityWebRequestModule.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "装杯", "装杯\装杯.csproj", "{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4527F9F6-7315-4DD6-BCF1-9281BEEF0051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4527F9F6-7315-4DD6-BCF1-9281BEEF0051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4527F9F6-7315-4DD6-BCF1-9281BEEF0051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4527F9F6-7315-4DD6-BCF1-9281BEEF0051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A88D8C-646F-4A5A-9F4C-9D46CAC9BCE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A88D8C-646F-4A5A-9F4C-9D46CAC9BCE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A88D8C-646F-4A5A-9F4C-9D46CAC9BCE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A88D8C-646F-4A5A-9F4C-9D46CAC9BCE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7958CB3-8BF3-4F10-B39C-D234AA02C056}
+	EndGlobalSection
+EndGlobal

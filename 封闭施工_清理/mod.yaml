@@ -1,0 +1,6 @@
+title: "封闭施工清理系统"
+description: "提供区域冻结、自动清理和资源回收功能的施工系统"
+staticID: ContainmentCleanup
+version: "1.0"
+minimumSupportedBuild: 596100
+APIVersion: 2

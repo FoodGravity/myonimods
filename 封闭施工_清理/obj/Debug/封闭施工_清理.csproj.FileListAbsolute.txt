@@ -1,0 +1,16 @@
+D:\onimod\myonimods\封闭施工_清理\obj\Debug\封闭施工_清理.csproj.AssemblyReference.cache
+D:\onimod\myonimods\封闭施工_清理\obj\Debug\封闭施工_清理.csproj.CoreCompileInputs.cache
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\封闭施工_清理.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\封闭施工_清理.pdb
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\0Harmony.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\Assembly-CSharp-firstpass.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\Assembly-CSharp.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.AnimationModule.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.CoreModule.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.Physics2DModule.dll
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.UI.dll
+D:\onimod\myonimods\封闭施工_清理\obj\Debug\封闭施工_清理.csproj.Up2Date
+D:\onimod\myonimods\封闭施工_清理\obj\Debug\封闭施工_清理.dll
+D:\onimod\myonimods\封闭施工_清理\obj\Debug\封闭施工_清理.pdb
+D:\onimod\myonimods\封闭施工_清理\bin\Debug\UnityEngine.UnityWebRequestModule.dll

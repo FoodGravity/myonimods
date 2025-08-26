@@ -1,0 +1,13 @@
+{
+  "STRINGS": {
+    "BUILDINGS": {
+      "PREFABS": {
+        "DOMINOBRICK": {
+          "NAME": "Domino Brick",
+          "DESC": "Trigger chain reaction when deconstructed",
+          "EFFECT": "Causes nearby domino bricks to deconstruct in sequence"
+        }
+      }
+    }
+  }
+}

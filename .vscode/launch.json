@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build ONI Mod",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Mod",
+            "program": "${workspaceFolder}/装杯/bin/Debug/装杯.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Run ONI Game",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P"
+        },
+        {
+            "name": "Build and Run (独立)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Mod",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "stopAtEntry": false
+        }
+    ],
+
+    
+}

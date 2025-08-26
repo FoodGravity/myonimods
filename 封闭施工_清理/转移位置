@@ -1,0 +1,3 @@
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\封闭施工_清理\封闭施工_清理.dll" "D:\onimod\myonimods\封闭施工_清理\bin\Debug\封闭施工_清理.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\封闭施工_清理\mod_info.yaml" "D:\onimod\myonimods\封闭施工_清理\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\封闭施工_清理\mod.yaml" "D:\onimod\myonimods\封闭施工_清理\mod.yaml"
