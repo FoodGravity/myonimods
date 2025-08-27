@@ -28,7 +28,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
     public string SliderTitleKey => "最大容量";
     public string SliderUnits => "千克";
 
-    // public string SliderUnits => Options[SelectedOption].text;
     public int SliderDecimalPlaces(int index) => 3;
 
     public float GetSliderMax(int index) => 1000f;
@@ -67,7 +66,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
     }
 
     // INToggleSideScreenControl 实现
-    public NToggleSideScreen 切换组件;
 
     public string SidescreenTitleKey => "装满后自动操作";
 
@@ -98,7 +96,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
     }
     //自动移除勾选框
     [Serialize] public bool autoRemove = false;
-    public SingleCheckboxSideScreen 自动移除勾选框;
+    // public SingleCheckboxSideScreen 自动移除勾选框;
     public string CheckboxTitleKey => "自动移除";
     public string CheckboxLabel => "自动移除";
     public string CheckboxTooltip => "装满自动掉自动移除杯子";
@@ -107,133 +105,35 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public void SetCheckboxValue(bool value) => autoRemove = value;
 
-    // [Serialize] public bool autoPour = false;
-    // [Serialize] public bool autoDrop = false;
-    // public GameObject dropGO;
-    // public SingleCheckboxSideScreen 自动掉落勾选框;
-    // public GameObject pourGO;
-    // public SingleCheckboxSideScreen 自动倒出勾选框;
-    // private class DropCheckboxControl : MonoBehaviour, ICheckboxControl
-    // {
-    //     private CupOptions parent;
-
-    //     public void Initialize(CupOptions options) => parent = options;
-
-    //     public string CheckboxTitleKey => "自动掉落";
-    //     public string CheckboxLabel => "自动掉落";
-    //     public string CheckboxTooltip => "装满自动掉落存储的液体，可以罐装";
-
-    //     public bool GetCheckboxValue() => parent.autoDrop;
-    //     public void SetCheckboxValue(bool value)
-    //     {
-    //         if (value)
-    //         {
-    //             parent.autoPour = false;
-    //             parent.自动倒出勾选框.SetTarget(parent.pourGO);
-    //         }
-    //         parent.autoDrop = value;
-
-    //     }
-    // }
-
-    // private class PourCheckboxControl : MonoBehaviour, ICheckboxControl
-    // {
-    //     private CupOptions parent;
-
-    //     public void Initialize(CupOptions options) => parent = options;
-
-    //     public string CheckboxTitleKey => "自动倒出";
-    //     public string CheckboxLabel => "自动倒出";
-    //     public string CheckboxTooltip => "自动倒出存储的液体";
-
-    //     public bool GetCheckboxValue() => parent.autoPour;
-
-    //     public void SetCheckboxValue(bool value)
-    //     {
-    //         if (value)
-    //         {
-    //             parent.autoDrop = false;
-    //             parent.自动掉落勾选框.SetTarget(parent.dropGO);
-    //         }
-    //         parent.autoPour = value;
-
-    //     }
-    // }
-
-    // private void 销毁所有勾选框()
-    // {
-    //     自动倒出勾选框 = null;
-    //     自动掉落勾选框 = null;
-    //     var allCheckboxs = FindObjectsOfType<SingleCheckboxSideScreen>();
-    //     foreach (var checkbox in allCheckboxs)
-    //     {
-    //         var title = checkbox.GetTitle();
-    //         if (title.Contains("自动掉落") || title.Contains("自动倒出"))
-    //         {
-    //             checkbox.DeleteObject();
-    //         }
-    //     }
-    // }
-
-    // private void 复制勾选框()
-    // {
-    //     if (dropGO == null)
-    //     {
-    //         dropGO = new GameObject("DropCheckbox");
-    //         dropGO.AddComponent<DropCheckboxControl>().Initialize(this);
-    //     }
-
-    //     if (pourGO == null)
-    //     {
-    //         pourGO = new GameObject("PourCheckbox");
-    //         pourGO.AddComponent<PourCheckboxControl>().Initialize(this);
-    //     }
-    //     销毁所有勾选框();
-
-    //     // 在原始Checkbox的下一位创建新勾选框
-    //     自动掉落勾选框 = GameObject.Instantiate(自动移除勾选框.gameObject, 自动移除勾选框.transform.parent).GetComponent<SingleCheckboxSideScreen>();
-    //     自动掉落勾选框.transform.SetSiblingIndex(自动移除勾选框.transform.GetSiblingIndex() + 1);
-    //     自动掉落勾选框?.SetTarget(dropGO);
-
-    //     自动倒出勾选框 = GameObject.Instantiate(自动移除勾选框.gameObject, 自动移除勾选框.transform.parent).GetComponent<SingleCheckboxSideScreen>();
-    //     自动倒出勾选框.transform.SetSiblingIndex(自动掉落勾选框.transform.GetSiblingIndex() + 1);
-    //     自动倒出勾选框?.SetTarget(pourGO);
-    // }
 
     //ui管理
     private static bool 全局只设置一次切换组件 = true;
 
     public void 检查ui()
     {
-        var allSideScreens = FindObjectsOfType<SideScreenContent>();
-        // Transform targetParent = null;
-
-        foreach (var screen in allSideScreens)
+        if (滑条组件 == null)
         {
-            var title = screen.GetTitle();
-            if (title.Contains(CheckboxTitleKey))
+            var allSideScreens = FindObjectsOfType<SideScreenContent>();
+            foreach (var screen in allSideScreens)
             {
-                自动移除勾选框 = screen.GetComponent<SingleCheckboxSideScreen>();
-                // targetParent = screen.transform.parent;
-            }
-            else if (title.Contains(SidescreenTitleKey))
-            {
-                切换组件 = screen.GetComponent<NToggleSideScreen>();
-                if (全局只设置一次切换组件)
+                var title = screen.GetTitle();
+                if (全局只设置一次切换组件 && title.Contains(SidescreenTitleKey))
                 {
-                    刷新切换组件();
+
+                    刷新切换组件(screen.GetComponent<NToggleSideScreen>());
                     全局只设置一次切换组件 = false;
+
+                }
+                else if (title.Contains(SliderTitleKey))
+                {
+                    滑条组件 = screen.GetComponent<SingleSliderSideScreen>();
+                    UpdateSliderText();
                 }
             }
-            else if (title.Contains(SliderTitleKey))
-            {
-                滑条组件 = screen.GetComponent<SingleSliderSideScreen>();
-                UpdateSliderText();
-            }
         }
-        // if (自动移除勾选框 != null) 复制勾选框();
+
     }
-    private void 刷新切换组件()
+    private void 刷新切换组件(NToggleSideScreen 切换组件)
     {
         切换组件.SetTarget(gameObject);
         // 强制刷新按钮状态

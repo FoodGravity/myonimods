@@ -6,8 +6,8 @@ public class Cup : KMonoBehaviour, ISim1000ms
     private static readonly EventSystem.IntraObjectHandler<Cup> OnRefreshUserMenuDelegate =
         new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnRefreshUserMenu(data));
 
-    private static readonly EventSystem.IntraObjectHandler<Cup> OnUIRefreshDelegate =
-         new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnUIRefresh(data));
+    // private static readonly EventSystem.IntraObjectHandler<Cup> OnUIRefreshDelegate =
+    //      new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnUIRefresh(data));
 
     private static readonly EventSystem.IntraObjectHandler<Cup> OnDeconstructDelegate =
         new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnDeconstruct());
@@ -17,11 +17,11 @@ public class Cup : KMonoBehaviour, ISim1000ms
 
     [MyCmpGet]
     public CupOptions options;
-    public static CupOptions nowCup;
+    // public static CupOptions nowCup;
     protected override void OnPrefabInit()
     {
         base.OnPrefabInit();
-        gameObject.Subscribe<Cup>(1980521255, Cup.OnUIRefreshDelegate);
+        // gameObject.Subscribe<Cup>(1980521255, Cup.OnUIRefreshDelegate);
         gameObject.Subscribe<Cup>(493375141, Cup.OnRefreshUserMenuDelegate);
         gameObject.Subscribe<Cup>(-111137758, Cup.OnRefreshUserMenuDelegate);//StatusChange
         gameObject.Subscribe<Cup>(-790448070, Cup.OnDeconstructDelegate);
@@ -37,18 +37,18 @@ public class Cup : KMonoBehaviour, ISim1000ms
         {
             options = gameObject.AddComponent<CupOptions>();
         }
-        nowCup = options;
+        // nowCup = options;
     }
 
-    public void OnUIRefresh(object data)
-    {
-        //没卵用
-    }
+    // public void OnUIRefresh(object data)
+    // {
+    //     //没卵用
+    // }
 
     private void OnRefreshUserMenu(object data)
     {
 
-        nowCup = options;
+        // nowCup = options;
         if (this.HasTag(GameTags.Stored))
             return;
 
@@ -59,19 +59,19 @@ public class Cup : KMonoBehaviour, ISim1000ms
             new System.Action(OnDeconstruct),
             tooltipText: "移除杯子，东西掉出来"), 0.0f);
 
-        // options?.ReorderUIElements();
-        if (options != null)
-        {
-            options.检查ui();
-            // if (options.debugtext != null)
-            // {
-            //     Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-            //          "a",
-            //          options.debugtext,
-            //          null,
-            //          tooltipText: options.debugtext), 0.0f);
-            // }
-        }
+        options?.检查ui();
+        // if (options != null)
+        // {
+        //     options.检查ui();
+        //     // if (options.debugtext != null)
+        //     // {
+        //     //     Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+        //     //          "a",
+        //     //          options.debugtext,
+        //     //          null,
+        //     //          tooltipText: options.debugtext), 0.0f);
+        //     // }
+        // }
     }
 
     public void OnDeconstruct()

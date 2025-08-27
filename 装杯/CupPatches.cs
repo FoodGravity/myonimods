@@ -10,9 +10,9 @@ public static class GeneratedBuildings_LoadGeneratedBuildings_Patch
     public static void Prefix()
     {
         // 添加建筑名称、描述和效果的本地化字符串
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "Cup");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "A container for holding liquids");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "Stores up to 500g of liquid");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "装杯");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "一个容器");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "最多存储1吨");
     }
 }
 
@@ -69,7 +69,7 @@ public static class BuildingDef_Instantiate_Patch
                 if (isCopied && sourceBuilding != null)
                 {
                     // 这里可以复制源建筑的设置
-                    cup.options.debugtext = "复制建筑 " + 源材质 + "，源建筑ID: " + sourceBuilding.GetInstanceID();
+                    // cup.options.debugtext = "复制建筑 " + 源材质 + "，源建筑ID: " + sourceBuilding.GetInstanceID();
                     // cup.OnCopySettings(sourceBuilding.gameObject);
 
                     // 使用协程实现延迟执行
@@ -77,7 +77,7 @@ public static class BuildingDef_Instantiate_Patch
                 }
                 else
                 {
-                    cup.options.debugtext = "新建筑" + 源材质;
+                    // cup.options.debugtext = "新建筑" + 源材质;
                 }
             }
         }
@@ -89,7 +89,7 @@ public static class BuildingDef_Instantiate_Patch
         // 等待一帧
         yield return 0f;
 
-        cup.options.debugtext += "开始执行延迟";
+        // cup.options.debugtext += "开始执行延迟";
         // var storage = cup.GetComponent<Storage>();
         //        if (storage != null)
         // {
@@ -126,9 +126,9 @@ public class CupPatches : UserMod2
     {
         base.OnLoad(harmony);
         // 先注册字符串
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "Cup");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "A container for holding liquids");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "Stores up to 500g of liquid");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "装杯");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "一个容器");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "最多存储1吨");
         // 再添加建筑到计划屏幕
         ModUtil.AddBuildingToPlanScreen("Base", CupConfig.ID);
     }
