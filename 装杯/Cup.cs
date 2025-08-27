@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using 装杯;
 public class Cup : KMonoBehaviour, ISim1000ms
 {
     private static readonly EventSystem.IntraObjectHandler<Cup> OnRefreshUserMenuDelegate =
@@ -54,15 +54,15 @@ public class Cup : KMonoBehaviour, ISim1000ms
         // 添加移除按钮
         Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
             "action_deconstruct",
-            "移除",
+            CupStrings.BUILDINGS.PREFABS.CUP.UI.REMOVE_BUTTON,
             new System.Action(OnDeconstruct),
-            tooltipText: "移除杯子，东西掉出来"), 0.0f);
+            tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.REMOVE_TOOLTIP), 0.0f);
 
-        Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-             "a",
-             Localization.GetLocale()?.Code,
-             null,
-             tooltipText: Localization.GetLocale()?.Code), 0.0f);
+        // Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+        //      "a",
+        //      Localization.GetLocale()?.Code,
+        //      null,
+        //      tooltipText: Localization.GetLocale()?.Code), 0.0f);
 
         options?.检查ui();
         // if (options != null)

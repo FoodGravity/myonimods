@@ -17,6 +17,8 @@
 
                     public static class UI
                     {
+                        public static LocString REMOVE_BUTTON => 是中文() ? "移除" : "Remove";
+                        public static LocString REMOVE_TOOLTIP => 是中文() ? "移除杯子，东西掉出来" : "Remove the cup, things drop out";
                         public static LocString MAX_CAPACITY_TOOLTIP => 是中文() ? "设置杯子的最大容量" : "Set the maximum capacity of the cup";
                         public static LocString AUTO_ACTION => 是中文() ? "装满后" : "When full";
                         public static LocString AUTO_REMOVE => 是中文() ? "自动移除" : "Auto remove";
