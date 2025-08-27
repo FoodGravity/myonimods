@@ -38,7 +38,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public string GetSliderTooltip(int index) => $"最大容量：{userMaxCapacity:0.###}{SliderUnits}";
 
-    public string GetSliderTooltipKey(int index) => "STRINGS.UI.TOOLTIPS.CUP_CAPACITY_TOOLTIP";
+    public string GetSliderTooltipKey(int index) => SliderTitleKey + "Tooltip";
 
     public void SetSliderValue(float value, int index)
     {
