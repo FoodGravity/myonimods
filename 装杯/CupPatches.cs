@@ -1,7 +1,8 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using KMod;
 using System.Collections.Generic;
 using UnityEngine;
+using 装杯;
 
 [HarmonyPatch(typeof(GeneratedBuildings), "LoadGeneratedBuildings")]
 public static class GeneratedBuildings_LoadGeneratedBuildings_Patch
@@ -9,9 +10,12 @@ public static class GeneratedBuildings_LoadGeneratedBuildings_Patch
     public static void Prefix()
     {
         // 添加建筑名称、描述和效果的本地化字符串
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "装杯");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "装杯");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "能装1吨");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME",
+            CupStrings.BUILDINGS.PREFABS.CUP.NAME);
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC",
+            CupStrings.BUILDINGS.PREFABS.CUP.DESC);
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT",
+            CupStrings.BUILDINGS.PREFABS.CUP.EFFECT);
     }
 }
 
@@ -126,5 +130,8 @@ public class CupPatches : UserMod2
         base.OnLoad(harmony);
         // 再添加建筑到计划屏幕
         ModUtil.AddBuildingToPlanScreen("Base", CupConfig.ID);
+        // 注册翻译文件
+        Localization.RegisterForTranslation(typeof(CupStrings));
+
     }
 }

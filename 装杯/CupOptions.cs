@@ -1,6 +1,7 @@
-using KSerialization;
+﻿using KSerialization;
 using System.Collections.Generic;
 using UnityEngine;
+using 装杯;
 
 public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl, INToggleSideScreenControl
 {
@@ -23,8 +24,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
     // ISingleSliderControl 实现，滑条
 
     public SingleSliderSideScreen 滑条组件;
-    public string SliderTitleKey => "最大容量";
-    public string SliderUnits => "千克";
+    public string SliderTitleKey => "装杯滑条组件";
+    public string SliderUnits => CupStrings.BUILDINGS.PREFABS.CUP.UI.SLIDER_UNITS;
 
     public int SliderDecimalPlaces(int index) => 3;
 
@@ -34,9 +35,9 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public float GetSliderValue(int index) => userMaxCapacity;
 
-    public string GetSliderTooltip(int index) => $"最大容量：{userMaxCapacity:0.###}{SliderUnits}";
+    public string GetSliderTooltip(int index) => $"{CupStrings.BUILDINGS.PREFABS.CUP.UI.MAX_CAPACITY_TOOLTIP}：{userMaxCapacity:0.###}{SliderUnits}";
 
-    public string GetSliderTooltipKey(int index) => SliderTitleKey + "Tooltip";
+    public string GetSliderTooltipKey(int index) => "装杯滑条组件悬浮窗";
 
     public void SetSliderValue(float value, int index)
     {
@@ -69,40 +70,42 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public List<LocString> Options => new List<LocString>
 {
-    "倒出",
-    "掉落",
-    "不管"
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.POUR_OUT,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.DROP,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.IGNORE
 };
 
     public List<LocString> Tooltips => new List<LocString>
 {
-    "装满后自动倒出存储的液体",
-    "装满后自动掉落存储的液体，可以罐装",
-    "装满后不做任何处理"
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.POUR_OUT,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.DROP,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.IGNORE
 };
 
-    public string Description => "装满后";
+    public string Description => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_ACTION;
 
     [Serialize]
     public int SelectedOption { get; set; } = 2;
+
     public int QueuedOption => SelectedOption;
 
     public void QueueSelectedOption(int option)
     {
-
         SelectedOption = option;
     }
+
     //自动移除勾选框
     [Serialize] public bool autoRemove = false;
+
     // public SingleCheckboxSideScreen 自动移除勾选框;
-    public string CheckboxTitleKey => "自动移除";
-    public string CheckboxLabel => "自动移除";
-    public string CheckboxTooltip => "装满自动掉自动移除杯子";
+    public string CheckboxTitleKey => "装杯自动移除勾选框";
+
+    public string CheckboxLabel => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_REMOVE;
+    public string CheckboxTooltip => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_REMOVE_TOOLTIP;
 
     public bool GetCheckboxValue() => autoRemove;
 
     public void SetCheckboxValue(bool value) => autoRemove = value;
-
 
     //ui管理
     private static bool 全局只设置一次切换组件 = true;
@@ -117,10 +120,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
                 var title = screen.GetTitle();
                 if (全局只设置一次切换组件 && title.Contains(SidescreenTitleKey))
                 {
-
                     刷新切换组件(screen.GetComponent<NToggleSideScreen>());
                     全局只设置一次切换组件 = false;
-
                 }
                 else if (title.Contains(SliderTitleKey))
                 {
@@ -129,8 +130,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
                 }
             }
         }
-
     }
+
     private void 刷新切换组件(NToggleSideScreen 切换组件)
     {
         切换组件.SetTarget(gameObject);
@@ -151,7 +152,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
         }
     }
 
-    public string debugtext;
+    // public string debugtext;
 
     //以下为默认函数
 
@@ -163,11 +164,9 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
         UpdateStorageCapacity();
         filteredStorage.FilterChanged();
 
-
         // 初始化meter控制器
         meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
             Meter.Offset.Infront, Grid.SceneLayer.NoLayer, "meter_frame", "meter_level");
-
 
         // 添加对TreeFilterable变化的监听
         var treeFilterable = GetComponent<TreeFilterable>();
@@ -175,7 +174,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
         {
             treeFilterable.OnFilterChanged += OnFilterChanged;
         }
-
 
         // 订阅存储变化事件
         Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
@@ -190,6 +188,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
     {
         UpdateMeterColor();
     }
+
     private void OnFilterChanged(HashSet<Tag> tags)
     {
         UpdateMeterColor();
@@ -203,7 +202,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
         var storage = GetComponent<Storage>();
         if (storage == null) return;
-
 
         var filterable = GetComponent<TreeFilterable>();
         if (filterable != null && filterable.AcceptedTags.Count > 0)
@@ -219,7 +217,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
                 {
                     mixedColor += element.substance.colour;
                     validColors++;
-
                 }
             }
 
@@ -228,19 +225,17 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
                 // 平均混合颜色
                 mixedColor /= validColors;
                 meter.SetSymbolTint("meter_level", mixedColor);
-                debugtext += $"混合了{validColors}种颜色";
-
+                // debugtext += $"混合了{validColors}种颜色";
             }
             else
             {
                 meter.SetSymbolTint("meter_level", Color.white);
             }
-
         }
         else
         {
             meter.SetSymbolTint("meter_level", Color.white);
-            debugtext += "滤网颜色：默认白色";
+            // debugtext += "滤网颜色：默认白色";
         }
 
         // if (storage.Count == 0)

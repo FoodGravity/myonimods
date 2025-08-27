@@ -58,6 +58,12 @@ public class Cup : KMonoBehaviour, ISim1000ms
             new System.Action(OnDeconstruct),
             tooltipText: "移除杯子，东西掉出来"), 0.0f);
 
+        Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+             "a",
+             Localization.GetLocale()?.Code,
+             null,
+             tooltipText: Localization.GetLocale()?.Code), 0.0f);
+
         options?.检查ui();
         // if (options != null)
         // {

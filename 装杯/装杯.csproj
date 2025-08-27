@@ -67,6 +67,7 @@
     <Compile Include="CupConfig.cs" />
     <Compile Include="CupOptions.cs" />
     <Compile Include="CupPatches.cs" />
+    <Compile Include="CupStrings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +79,7 @@
     <None Include="mod_info.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="strings.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="anim\assets\cup\cup.png" />
