@@ -73,7 +73,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 {
     "倒出",
     "掉落",
-    "无视"
+    "不管"
 };
 
     public List<LocString> Tooltips => new List<LocString>
