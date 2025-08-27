@@ -11,8 +11,8 @@ public static class GeneratedBuildings_LoadGeneratedBuildings_Patch
     {
         // 添加建筑名称、描述和效果的本地化字符串
         Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "装杯");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "一个容器");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "最多存储1吨");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "装杯");
+        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "能装1吨");
     }
 }
 
@@ -125,10 +125,6 @@ public class CupPatches : UserMod2
     public override void OnLoad(Harmony harmony)
     {
         base.OnLoad(harmony);
-        // 先注册字符串
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.NAME", "装杯");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.DESC", "一个容器");
-        Strings.Add($"STRINGS.BUILDINGS.PREFABS.{CupConfig.ID.ToUpper()}.EFFECT", "最多存储1吨");
         // 再添加建筑到计划屏幕
         ModUtil.AddBuildingToPlanScreen("Base", CupConfig.ID);
     }
