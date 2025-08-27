@@ -1,7 +1,5 @@
-using Delaunay.LR;
 using KSerialization;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl, INToggleSideScreenControl
