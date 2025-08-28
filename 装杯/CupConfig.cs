@@ -61,6 +61,7 @@ public class CupConfig : IBuildingConfig
         // 添加必要组件
         go.AddOrGet<Cup>();
         go.AddOrGet<CupOptions>();
+  
 
         // go.AddOrGetDef<RocketUsageRestriction.Def>();//火箭不能用
 

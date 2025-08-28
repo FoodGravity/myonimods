@@ -78,10 +78,10 @@ public static class BuildingDef_Instantiate_Patch
                     // 使用协程实现延迟执行
                     Global.Instance.StartCoroutine(DelayedFilterSync(cup, sourceBuilding));
                 }
-                else
-                {
-                    // cup.options.debugtext = "新建筑" + 源材质;
-                }
+                // else
+                // {
+                //     // cup.options.debugtext = "新建筑" + 源材质;
+                // }
             }
         }
         return false;
@@ -91,13 +91,8 @@ public static class BuildingDef_Instantiate_Patch
     {
         // 等待一帧
         yield return 0f;
-
-        // cup.options.debugtext += "开始执行延迟";
-        // var storage = cup.GetComponent<Storage>();
-        //        if (storage != null)
-        // {
         cup.Trigger((int)GameHashes.CopySettings, sourceBuilding.gameObject);
-        // }
+
     }
 }
 
@@ -117,8 +112,15 @@ public static class ResourceRemainingDisplayScreen_Patch
 {
     public static string Postfix(string __result)
     {
-        if (BuildTool.Instance.GetComponent<BuildToolHoverTextCard>().currentDef.name == CupConfig.ID)
-            return "无需材料";
+        if (__result == null) return null;
+
+        // 添加空值检查
+        if (BuildTool.Instance == null) return __result;
+        var hoverCard = BuildTool.Instance.GetComponent<BuildToolHoverTextCard>();
+        if (hoverCard == null || hoverCard.currentDef == null) return __result;
+
+        if (hoverCard.currentDef.name == CupConfig.ID)
+            return CupStrings.BUILDINGS.PREFABS.CUP.无需材料;
         return __result;
     }
 }

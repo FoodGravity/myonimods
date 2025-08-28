@@ -3,29 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using 装杯;
 
-public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl, INToggleSideScreenControl
+public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScreenControl, ICheckboxControl
 {
+    [MyCmpGet]
+    public Storage storage;
     public FilteredStorage filteredStorage;
+    private void OnStorageChanged(object data) { UpdateMeterColor(); }
 
-    // 默认储存变量
-
-    [Serialize] private float userMaxCapacity = 0.03f;//用户设置目标容量
-
-    public float UserMaxCapacity//用户设置目标容量
+    private void OnFilterChanged(HashSet<Tag> tags)
     {
-        get => userMaxCapacity;
-        set
-        {
-            userMaxCapacity = value;
-            UpdateStorageCapacity();
-        }
+        nowtags = tags;
+        UpdateMeterColor();
     }
+    [Serialize] private HashSet<Tag> nowtags;
+    // 默认储存变量
+    [Serialize] public float userMaxCapacity = 0.03f;//用户设置目标容量
 
     // ISingleSliderControl 实现，滑条
 
     public SingleSliderSideScreen 滑条组件;
     public string SliderTitleKey => "装杯滑条组件";
-    public string SliderUnits => CupStrings.BUILDINGS.PREFABS.CUP.UI.SLIDER_UNITS;
+    public string SliderUnits => CupStrings.BUILDINGS.PREFABS.CUP.UI.单位;
 
     public int SliderDecimalPlaces(int index) => 3;
 
@@ -35,7 +33,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public float GetSliderValue(int index) => userMaxCapacity;
 
-    public string GetSliderTooltip(int index) => $"{CupStrings.BUILDINGS.PREFABS.CUP.UI.MAX_CAPACITY_TOOLTIP}：{userMaxCapacity:0.###}{SliderUnits}";
+    public string GetSliderTooltip(int index) => $"{CupStrings.BUILDINGS.PREFABS.CUP.UI.最大容量提示}：{userMaxCapacity:0.###}{SliderUnits}";
 
     public string GetSliderTooltipKey(int index) => "装杯滑条组件悬浮窗";
 
@@ -59,7 +57,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     private void UpdateStorageCapacity()
     {
-        if (GetComponent<Storage>() is Storage storage)
+        if (storage != null)
         { storage.capacityKg = userMaxCapacity; }
         UpdateMeterColor();
     }
@@ -70,19 +68,23 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public List<LocString> Options => new List<LocString>
 {
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.POUR_OUT,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.DROP,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.IGNORE
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.倒出,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.掉落,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.不管,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.需装满
 };
 
     public List<LocString> Tooltips => new List<LocString>
 {
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.POUR_OUT,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.DROP,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.IGNORE
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.倒出提示,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.掉落提示,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.不管提示,
+        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.需装满提示
 };
 
-    public string Description => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_ACTION;
+    public string Description => 需装满 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.装满后 : CupStrings.BUILDINGS.PREFABS.CUP.UI.随时;
+
+    public bool 需装满 = true;
 
     [Serialize]
     public int SelectedOption { get; set; } = 2;
@@ -91,17 +93,26 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
 
     public void QueueSelectedOption(int option)
     {
-        SelectedOption = option;
+        if (option == 3)
+        {
+            需装满 = !需装满;
+        }
+        else
+        {
+            SelectedOption = option;
+        }
+
+
     }
 
     //自动移除勾选框
-    [Serialize] public bool autoRemove = false;
+    [Serialize] public bool autoRemove = true;
 
     // public SingleCheckboxSideScreen 自动移除勾选框;
     public string CheckboxTitleKey => "装杯自动移除勾选框";
 
-    public string CheckboxLabel => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_REMOVE;
-    public string CheckboxTooltip => CupStrings.BUILDINGS.PREFABS.CUP.UI.AUTO_REMOVE_TOOLTIP;
+    public string CheckboxLabel => CupStrings.BUILDINGS.PREFABS.CUP.UI.自动移除;
+    public string CheckboxTooltip => CupStrings.BUILDINGS.PREFABS.CUP.UI.自动移除提示;
 
     public bool GetCheckboxValue() => autoRemove;
 
@@ -152,57 +163,13 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
         }
     }
 
-    // public string debugtext;
-
-    //以下为默认函数
-
-    protected override void OnSpawn()
-    {
-        base.OnSpawn();
-        // 其余初始化代码保持不变
-        filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
-        UpdateStorageCapacity();
-        filteredStorage.FilterChanged();
-
-        // 初始化meter控制器
-        meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
-            Meter.Offset.Infront, Grid.SceneLayer.NoLayer, "meter_frame", "meter_level");
-
-        // 添加对TreeFilterable变化的监听
-        var treeFilterable = GetComponent<TreeFilterable>();
-        if (treeFilterable != null)
-        {
-            treeFilterable.OnFilterChanged += OnFilterChanged;
-        }
-
-        // 订阅存储变化事件
-        Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
-
-        // 初始更新颜色
-        UpdateMeterColor();
-        // 添加颜色更新逻辑
-    }
-
-    // 添加新方法处理存储变化
-    private void OnStorageChanged(object data)
-    {
-        UpdateMeterColor();
-    }
-
-    private void OnFilterChanged(HashSet<Tag> tags)
-    {
-        UpdateMeterColor();
-    }
-
+    // 材质控制
     private MeterController meter;
 
     private void UpdateMeterColor()
     {
         if (meter == null) return;
-
-        var storage = GetComponent<Storage>();
         if (storage == null) return;
-
         var filterable = GetComponent<TreeFilterable>();
         if (filterable != null && filterable.AcceptedTags.Count > 0)
         {
@@ -225,7 +192,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
                 // 平均混合颜色
                 mixedColor /= validColors;
                 meter.SetSymbolTint("meter_level", mixedColor);
-                // debugtext += $"混合了{validColors}种颜色";
+
             }
             else
             {
@@ -235,28 +202,49 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, ICheckboxControl
         else
         {
             meter.SetSymbolTint("meter_level", Color.white);
-            // debugtext += "滤网颜色：默认白色";
+
         }
 
-        // if (storage.Count == 0)
-        // {
-        //     return;
-        // }
-        // var firstItem = storage[0];
-        // var primaryElement = firstItem.GetComponent<PrimaryElement>();
 
-        // if (primaryElement != null)
-        // {
-        //     var element = ElementLoader.FindElementByHash(primaryElement.ElementID);
-        //     if (element != null)
-        //     {
-        //         // 先设置颜色
-        //         meter.SetSymbolTint("meter_level", element.substance.uiColour);
-
-        //     }
-        // }
         meter.SetPositionPercent(storage.MassStored() / storage.capacityKg);
     }
+
+    // public string debugtext;
+
+    //以下为默认函数
+
+    protected override void OnSpawn()
+    {
+        base.OnSpawn();
+        // 其余初始化代码保持不变
+        filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
+
+
+
+
+
+        UpdateStorageCapacity();
+        // 初始化meter控制器
+        meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
+            Meter.Offset.Infront, Grid.SceneLayer.NoLayer, "meter_frame", "meter_level");
+
+        // 添加对TreeFilterable变化的监听
+        var treeFilterable = GetComponent<TreeFilterable>();
+        if (treeFilterable != null)
+        {
+            if (nowtags?.Count > 0) treeFilterable.UpdateFilters(nowtags);
+
+            treeFilterable.OnFilterChanged += OnFilterChanged;
+        }
+        filteredStorage.FilterChanged();
+        // 订阅存储变化事件
+        Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
+
+        // 初始更新颜色
+        UpdateMeterColor();
+        // 添加颜色更新逻辑
+    }
+
 
     protected override void OnCleanUp()
     {

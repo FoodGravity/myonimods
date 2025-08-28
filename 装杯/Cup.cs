@@ -54,15 +54,10 @@ public class Cup : KMonoBehaviour, ISim1000ms
         // 添加移除按钮
         Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
             "action_deconstruct",
-            CupStrings.BUILDINGS.PREFABS.CUP.UI.REMOVE_BUTTON,
+            CupStrings.BUILDINGS.PREFABS.CUP.UI.移除,
             new System.Action(OnDeconstruct),
-            tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.REMOVE_TOOLTIP), 0.0f);
+            tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.移除提示), 0.0f);
 
-        // Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-        //      "a",
-        //      Localization.GetLocale()?.Code,
-        //      null,
-        //      tooltipText: Localization.GetLocale()?.Code), 0.0f);
 
         options?.检查ui();
         // if (options != null)
@@ -84,9 +79,9 @@ public class Cup : KMonoBehaviour, ISim1000ms
         // 使用CupOptions的FilteredStorage来处理物品掉落
         if (options != null)
         {
-            var storage = GetComponent<Storage>();
+
             // storage?.DropAll(options.autoPour, options.autoPour);
-            storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
+            options.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
 
         }
         gameObject.DeleteObject();
@@ -100,10 +95,9 @@ public class Cup : KMonoBehaviour, ISim1000ms
             var sourceCup = source.GetComponent<Cup>();
             if (sourceCup != null && sourceCup.options != null)
             {
-                options.UserMaxCapacity = sourceCup.options.UserMaxCapacity;
+                options.userMaxCapacity = sourceCup.options.userMaxCapacity;
                 options.autoRemove = sourceCup.options.autoRemove;
-                // options.autoDrop = sourceCup.options.autoDrop;
-                // options.autoPour = sourceCup.options.autoPour;
+
                 options.SelectedOption = sourceCup.options.SelectedOption;
             }
         }
@@ -114,21 +108,17 @@ public class Cup : KMonoBehaviour, ISim1000ms
         if (options == null || options.filteredStorage == null)
             return;
 
-        if (options.filteredStorage.IsFull())
+        bool shouldProcess = !options.需装满 || options.filteredStorage.IsFull();
+
+        if (shouldProcess)
         {
-            if (options.autoRemove)
+            if (options.autoRemove && options.SelectedOption != 2)
             {
                 OnDeconstruct();
             }
-            // else if (options.autoDrop || options.autoPour)
-            // {
-            //     var storage = GetComponent<Storage>();
-            //     storage?.DropAll(options.autoPour, options.autoPour);
-            // }
             else if (options.SelectedOption != 2)
             {
-                var storage = GetComponent<Storage>();
-                storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
+                options.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
             }
         }
     }
