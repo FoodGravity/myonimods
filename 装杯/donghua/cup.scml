@@ -25,22 +25,22 @@
             </mainline>
             <timeline id="0" name="meter_target_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="3" y="15" angle="0"/>
+                    <object folder="0" file="3" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="1" name="sweep_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="0" y="106" angle="0"/>
+                    <object folder="0" file="0" y="79" angle="0"/>
                 </key>
             </timeline>
             <timeline id="2" name="body_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="2" y="6" angle="0"/>
+                    <object folder="0" file="2" x="-0" y="6" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="3" name="body_1">
                 <key id="0" spin="0">
-                    <object folder="0" file="9" y="15.5" angle="0"/>
+                    <object folder="0" file="9" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
         </animation>
@@ -55,22 +55,22 @@
             </mainline>
             <timeline id="0" name="meter_target_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="3" y="15" angle="0"/>
+                    <object folder="0" file="3" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="1" name="sweep_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="0" y="106" angle="0"/>
+                    <object folder="0" file="0" y="79" angle="0"/>
                 </key>
             </timeline>
             <timeline id="2" name="body_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="2" y="6" angle="0"/>
+                    <object folder="0" file="2" x="-0" y="6" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="3" name="body_1">
                 <key id="0" spin="0">
-                    <object folder="0" file="9" y="15.5" angle="0"/>
+                    <object folder="0" file="9" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
         </animation>
@@ -85,22 +85,22 @@
             </mainline>
             <timeline id="0" name="sweep_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="0" y="106" angle="0"/>
+                    <object folder="0" file="0" y="79" angle="0"/>
                 </key>
             </timeline>
             <timeline id="1" name="meter_target_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="3" y="15" angle="0"/>
+                    <object folder="0" file="3" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="2" name="body_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="2" y="6" angle="0"/>
+                    <object folder="0" file="2" x="-0" y="6" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
             <timeline id="3" name="body_1">
                 <key id="0" spin="0">
-                    <object folder="0" file="9" y="15.5" angle="0"/>
+                    <object folder="0" file="9" y="12.7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
         </animation>
@@ -112,7 +112,7 @@
             </mainline>
             <timeline id="0" name="place_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="1" y="6" angle="0"/>
+                    <object folder="0" file="1" y="6" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
         </animation>
@@ -124,7 +124,7 @@
             </mainline>
             <timeline id="0" name="ui_0">
                 <key id="0" spin="0">
-                    <object folder="0" file="7" angle="0"/>
+                    <object folder="0" file="7" angle="0" scale_x="0.7" scale_y="0.7"/>
                 </key>
             </timeline>
         </animation>
