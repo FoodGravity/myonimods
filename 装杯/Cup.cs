@@ -76,14 +76,7 @@ public class Cup : KMonoBehaviour, ISim1000ms
 
     public void OnDeconstruct()
     {
-        // 使用CupOptions的FilteredStorage来处理物品掉落
-        if (options != null)
-        {
-
-            // storage?.DropAll(options.autoPour, options.autoPour);
-            options.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
-
-        }
+        options?.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
         gameObject.DeleteObject();
     }
 

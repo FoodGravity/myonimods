@@ -30,7 +30,7 @@
 
                         public static class ACTIONS
                         {
-                            public static LocString 倒出 => 是中文() ? "倒出" : "Pour out";
+                            public static LocString 倒出 => 是中文() ? "倒出" : "Pour";
                             public static LocString 掉落 => 是中文() ? "掉落" : "Drop";
                             public static LocString 不管 => 是中文() ? "不管" : "Ignore";
                             public static LocString 需装满 => 是中文() ? "需装满" : "NeedFull";

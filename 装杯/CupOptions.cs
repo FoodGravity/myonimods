@@ -7,15 +7,20 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 {
     [MyCmpGet]
     public Storage storage;
+
     public FilteredStorage filteredStorage;
-    private void OnStorageChanged(object data) { UpdateMeterColor(); }
+
+    private void OnStorageChanged(object data)
+    { UpdateMeterColor(); }
 
     private void OnFilterChanged(HashSet<Tag> tags)
     {
         nowtags = tags;
         UpdateMeterColor();
     }
+
     [Serialize] private HashSet<Tag> nowtags;
+
     // 默认储存变量
     [Serialize] public float userMaxCapacity = 0.03f;//用户设置目标容量
 
@@ -64,6 +69,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     // INToggleSideScreenControl 实现
 
+
     public string SidescreenTitleKey => "装满后自动操作";
 
     public List<LocString> Options => new List<LocString>
@@ -101,8 +107,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         {
             SelectedOption = option;
         }
-
-
     }
 
     //自动移除勾选框
@@ -119,29 +123,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     public void SetCheckboxValue(bool value) => autoRemove = value;
 
     //ui管理
-    private static bool 全局只设置一次切换组件 = true;
-
-    public void 检查ui()
-    {
-        if (滑条组件 == null)
-        {
-            var allSideScreens = FindObjectsOfType<SideScreenContent>();
-            foreach (var screen in allSideScreens)
-            {
-                var title = screen.GetTitle();
-                if (全局只设置一次切换组件 && title.Contains(SidescreenTitleKey))
-                {
-                    刷新切换组件(screen.GetComponent<NToggleSideScreen>());
-                    全局只设置一次切换组件 = false;
-                }
-                else if (title.Contains(SliderTitleKey))
-                {
-                    滑条组件 = screen.GetComponent<SingleSliderSideScreen>();
-                    UpdateSliderText();
-                }
-            }
-        }
-    }
 
     private void 刷新切换组件(NToggleSideScreen 切换组件)
     {
@@ -163,6 +144,43 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         }
     }
 
+    public void 检查ui()
+    {
+        if ((滑条组件 == null) && DetailsScreen.Instance != null)
+        {
+            // 使用反射获取私有字段
+            var sideScreensField = typeof(DetailsScreen).GetField("sideScreens",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (sideScreensField != null)
+            {
+                if (sideScreensField.GetValue(DetailsScreen.Instance) is List<DetailsScreen.SideScreenRef> sideScreens)
+                {
+                    foreach (var screenRef in sideScreens)
+                    {
+                        if (screenRef.screenInstance == null) continue;
+
+                        var title = screenRef.screenInstance.GetTitle();
+                        if (title.Contains(SidescreenTitleKey))
+                        {
+
+                            刷新切换组件(screenRef.screenInstance.GetComponent<NToggleSideScreen>());
+                        }
+                        else if (title.Contains(SliderTitleKey))
+                        {
+                            滑条组件 = screenRef.screenInstance.GetComponent<SingleSliderSideScreen>();
+                            UpdateSliderText();
+                        }
+                    }
+                }
+            }
+        }
+        // if (切换组件 != null)
+        // {
+        //     刷新切换组件(切换组件);
+        // }
+    }
+
     // 材质控制
     private MeterController meter;
 
@@ -170,29 +188,28 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     {
         if (meter == null) return;
         if (storage == null) return;
-        var filterable = GetComponent<TreeFilterable>();
-        if (filterable != null && filterable.AcceptedTags.Count > 0)
+
+        if (nowtags != null && nowtags.Count > 0)
         {
             // 颜色混合逻辑
             Color mixedColor = Color.clear;
-            int validColors = 0;
+            int colornum = 0;
 
-            foreach (var tag in filterable.AcceptedTags)
+            foreach (var tag in nowtags)
             {
                 var element = ElementLoader.GetElement(tag);
                 if (element != null)
                 {
                     mixedColor += element.substance.colour;
-                    validColors++;
+                    colornum++;
                 }
             }
 
-            if (validColors > 0)
+            if (colornum > 0)
             {
                 // 平均混合颜色
-                mixedColor /= validColors;
+                mixedColor /= colornum;
                 meter.SetSymbolTint("meter_level", mixedColor);
-
             }
             else
             {
@@ -202,9 +219,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         else
         {
             meter.SetSymbolTint("meter_level", Color.white);
-
         }
-
 
         meter.SetPositionPercent(storage.MassStored() / storage.capacityKg);
     }
@@ -216,18 +231,17 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     protected override void OnSpawn()
     {
         base.OnSpawn();
-        // 其余初始化代码保持不变
-        filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
-
-
-
-
-
+        if (filteredStorage == null)
+        {
+            filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
+        }
         UpdateStorageCapacity();
+        //初始化可以获取到meter、TreeFilterable
+        filteredStorage.FilterChanged();
+
         // 初始化meter控制器
         meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
             Meter.Offset.Infront, Grid.SceneLayer.NoLayer, "meter_frame", "meter_level");
-
         // 添加对TreeFilterable变化的监听
         var treeFilterable = GetComponent<TreeFilterable>();
         if (treeFilterable != null)
@@ -236,22 +250,17 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
             treeFilterable.OnFilterChanged += OnFilterChanged;
         }
-        filteredStorage.FilterChanged();
-        // 订阅存储变化事件
-        Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
 
+        Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
         // 初始更新颜色
         UpdateMeterColor();
-        // 添加颜色更新逻辑
-    }
 
+    }
 
     protected override void OnCleanUp()
     {
         filteredStorage.CleanUp();
-        // pourGO?.DeleteObject();
-        // dropGO?.DeleteObject();
-        // 销毁所有勾选框();
+
         var treeFilterable = GetComponent<TreeFilterable>();
         if (treeFilterable != null)
         {

@@ -41,6 +41,10 @@ public class CupConfig : IBuildingConfig
         buildingDef.Repairable = false;
         buildingDef.Disinfectable = false;
         buildingDef.Invincible = true;
+
+        buildingDef.SceneLayer = Grid.SceneLayer.SceneMAX;   // 使用最高场景层
+        buildingDef.ObjectLayer = ObjectLayer.MovePlacer;  // 移动放置器层
+
         return buildingDef;
     }
 
@@ -53,7 +57,7 @@ public class CupConfig : IBuildingConfig
         storage.allowItemRemoval = false;
         storage.showDescriptor = true;
         // storage.storageFilters = STORAGEFILTERS.LIQUIDS.Concat(STORAGEFILTERS.GASES).ToList();
-        storage.storageFilters = STORAGEFILTERS.NOT_EDIBLE_SOLIDS.Concat<Tag>((IEnumerable<Tag>) STORAGEFILTERS.FOOD).Concat<Tag>((IEnumerable<Tag>) STORAGEFILTERS.LIQUIDS).Concat<Tag>((IEnumerable<Tag>) STORAGEFILTERS.GASES).ToList<Tag>();
+        storage.storageFilters = STORAGEFILTERS.NOT_EDIBLE_SOLIDS.Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.FOOD).Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.LIQUIDS).Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.GASES).ToList<Tag>();
         storage.storageFullMargin = 0.0f;
         storage.fetchCategory = Storage.FetchCategory.GeneralStorage;
         storage.showCapacityStatusItem = true;
@@ -61,7 +65,7 @@ public class CupConfig : IBuildingConfig
         // 添加必要组件
         go.AddOrGet<Cup>();
         go.AddOrGet<CupOptions>();
-  
+
 
         // go.AddOrGetDef<RocketUsageRestriction.Def>();//火箭不能用
 

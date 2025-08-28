@@ -25,7 +25,7 @@ public static class CopyBuildingFlag
     public static bool IsCopyBuildingMode = false;
     public static Building SourceBuilding = null;
 }
-
+//当选择复制建筑的材质时触发
 [HarmonyPatch(typeof(MaterialSelectionPanel), "SelectSourcesMaterials")]
 public static class MaterialSelectionPanel_SelectSourcesMaterials_Patch
 {
@@ -35,8 +35,17 @@ public static class MaterialSelectionPanel_SelectSourcesMaterials_Patch
         CopyBuildingFlag.SourceBuilding = building;
     }
 }
-
-// 新增即时建造补丁
+// 建筑工具状态监听补丁
+[HarmonyPatch(typeof(BuildTool), "OnDeactivateTool")]
+public static class BuildTool_OnDeactivate_Patch
+{
+    public static void Postfix()
+    {
+        CopyBuildingFlag.IsCopyBuildingMode = false;
+        CopyBuildingFlag.SourceBuilding = null;
+    }
+}
+// 建造补丁
 [HarmonyPatch(typeof(BuildingDef), "Instantiate")]
 public static class BuildingDef_Instantiate_Patch
 {
@@ -53,11 +62,11 @@ public static class BuildingDef_Instantiate_Patch
 
         bool isCopied = CopyBuildingFlag.IsCopyBuildingMode;
         Building sourceBuilding = CopyBuildingFlag.SourceBuilding;
-        CopyBuildingFlag.IsCopyBuildingMode = false;
-        CopyBuildingFlag.SourceBuilding = null;
+        // CopyBuildingFlag.IsCopyBuildingMode = false;
+        // CopyBuildingFlag.SourceBuilding = null;
 
         // 判断当前是否为复制建筑工具
-        var 源材质 = selected_elements[0];
+        // var 源材质 = selected_elements[0];
 
         if (selected_elements.Count > 0)
             selected_elements[0] = TagManager.Create("Vacuum");
@@ -86,7 +95,6 @@ public static class BuildingDef_Instantiate_Patch
         }
         return false;
     }
-
     private static IEnumerator<float> DelayedFilterSync(Cup cup, Building sourceBuilding)
     {
         // 等待一帧
@@ -95,6 +103,7 @@ public static class BuildingDef_Instantiate_Patch
 
     }
 }
+
 
 // 新增UI相关补丁
 [HarmonyPatch(typeof(ProductInfoScreen), "SetMaterials")]

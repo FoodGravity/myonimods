@@ -17,3 +17,14 @@ D:\onimod\myonimods\DominoBricks\obj\Debug\DominoBricks.dll
 D:\onimod\myonimods\DominoBricks\obj\Debug\DominoBricks.pdb
 D:\onimod\myonimods\DominoBricks\bin\Debug\Unity.TextMeshPro.dll
 D:\onimod\myonimods\DominoBricks\bin\Debug\UnityEngine.UnityWebRequestModule.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Data.Common.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Diagnostics.StackTrace.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Diagnostics.Tracing.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Globalization.Extensions.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Net.Http.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Net.Sockets.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Runtime.Serialization.Primitives.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Security.Cryptography.Algorithms.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Security.SecureString.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Threading.Overlapped.dll
+D:\onimod\myonimods\DominoBricks\bin\Debug\System.Xml.XPath.XDocument.dll
