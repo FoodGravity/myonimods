@@ -170,13 +170,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         if (DetailsScreen.Instance == null)
             return;
 
-        // 优化查找逻辑：直接查找对应的侧边栏组件
-        查找并设置侧边栏组件();
-    }
-
-    private void 查找并设置侧边栏组件()
-    {
-        // 方法1：通过DetailsScreen的子组件查找（更稳定）
         var allSideScreens = DetailsScreen.Instance.GetComponentsInChildren<SideScreenContent>(true);
 
         foreach (var sideScreen in allSideScreens)
@@ -208,10 +201,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             if (滑条组件 != null && 切换组件 != null)
                 break;
         }
-
     }
-
-
     public static bool 需要刷新切换组件 = true;
     private void 刷新切换组件状态()
     {
