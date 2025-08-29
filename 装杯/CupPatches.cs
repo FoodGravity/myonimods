@@ -3,7 +3,7 @@ using KMod;
 using System.Collections.Generic;
 using UnityEngine;
 using 装杯;
-
+using TUNING;
 [HarmonyPatch(typeof(GeneratedBuildings), "LoadGeneratedBuildings")]
 public static class GeneratedBuildings_LoadGeneratedBuildings_Patch
 {
@@ -62,12 +62,9 @@ public static class BuildingDef_Instantiate_Patch
 
         bool isCopied = CopyBuildingFlag.IsCopyBuildingMode;
         Building sourceBuilding = CopyBuildingFlag.SourceBuilding;
-        // CopyBuildingFlag.IsCopyBuildingMode = false;
-        // CopyBuildingFlag.SourceBuilding = null;
+
 
         // 判断当前是否为复制建筑工具
-        // var 源材质 = selected_elements[0];
-
         if (selected_elements.Count > 0)
             selected_elements[0] = TagManager.Create("Vacuum");
 
@@ -80,24 +77,16 @@ public static class BuildingDef_Instantiate_Patch
             {
                 if (isCopied && sourceBuilding != null)
                 {
-                    // 这里可以复制源建筑的设置
-                    // cup.options.debugtext = "复制建筑 " + 源材质 + "，源建筑ID: " + sourceBuilding.GetInstanceID();
-                    // cup.OnCopySettings(sourceBuilding.gameObject);
-
                     // 使用协程实现延迟执行
                     Global.Instance.StartCoroutine(DelayedFilterSync(cup, sourceBuilding));
                 }
-                // else
-                // {
-                //     // cup.options.debugtext = "新建筑" + 源材质;
-                // }
             }
         }
         return false;
     }
     private static IEnumerator<float> DelayedFilterSync(Cup cup, Building sourceBuilding)
     {
-        // 等待一帧
+        // 等待一帧复制设置
         yield return 0f;
         cup.Trigger((int)GameHashes.CopySettings, sourceBuilding.gameObject);
 
@@ -139,10 +128,9 @@ public class CupPatches : UserMod2
     public override void OnLoad(Harmony harmony)
     {
         base.OnLoad(harmony);
-        // 再添加建筑到计划屏幕
-        ModUtil.AddBuildingToPlanScreen("Base", CupConfig.ID);
+        // 添加到"Base"分类的最前面
+        ModUtil.AddBuildingToPlanScreen("Base", CupConfig.ID, "uncategorized", BUILDINGS.PLANORDER[0].buildingAndSubcategoryData[0].Key, ModUtil.BuildingOrdering.Before);
         // 注册翻译文件
         Localization.RegisterForTranslation(typeof(CupStrings));
-
     }
 }

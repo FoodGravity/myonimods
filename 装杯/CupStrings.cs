@@ -20,20 +20,21 @@
                     {
                         public static LocString 移除 => 是中文() ? "移除" : "Remove";
                         public static LocString 移除提示 => 是中文() ? "移除杯子，东西掉出来" : "Remove the cup, things drop out";
-
+                        public static LocString 自动操作 => 是中文() ? "自动操作" : "AutoAction";
                         public static LocString 最大容量提示 => 是中文() ? "设置杯子的最大容量" : "Set the maximum capacity of the cup";
-                        public static LocString 装满后 => 是中文() ? "装满后" : "When full";
-                         public static LocString 随时 => 是中文() ? "随时倒出/掉落" : "At any time pour/drop";
-                        public static LocString 自动移除 => 是中文() ? "倒出/掉落后自动移除" : "AutoRemoveWhenPourOrDrop";
-                        public static LocString 自动移除提示 => 是中文() ? "倒出/掉落后自动移除杯子" : "Automatically remove the cup when pour out or drop";
-                        public static LocString 单位 => 是中文() ? "千克" : "kg";
-
+                        public static LocString 装满 => 是中文() ? "装满后" : "When full";
+                        public static LocString 随时 => 是中文() ? "随时" : "Any time";
+                        public static LocString 自动移除 => 是中文() ? "自动移除(在自动操作后)" : "AutoRemove(After AutoAction)";
+                        public static LocString 启用桶罐装 => 是中文() ? "启用桶/罐装" : "Enable bucket/bottling";
+                        public static LocString 启用桶罐装提示 => 是中文() ? "若启用，复制人会直接将从以下来源获取桶、罐运送到这个建筑：" : "If enabled, the copier will directly transfer buckets and bottles from the following sources to this building:";
+                        public static LocString 禁用桶罐装 => 是中文() ? "禁用桶/罐装" : "Disable bucket/bottling";
+                        public static LocString 禁用桶罐装提示 => 是中文() ? "若禁用，复制人不会直接将从以下来源获取桶、罐运送到这个建筑：" : "If disabled, the copier will not directly transfer buckets and bottles from the following sources to this building:";
+                        public static LocString 切换 => 是中文() ? "切换到" : "Switch to";
                         public static class ACTIONS
                         {
                             public static LocString 倒出 => 是中文() ? "倒出" : "Pour";
                             public static LocString 掉落 => 是中文() ? "掉落" : "Drop";
                             public static LocString 不管 => 是中文() ? "不管" : "Ignore";
-                            public static LocString 需装满 => 是中文() ? "需装满" : "NeedFull";
 
 
                             public static class TOOLTIPS
@@ -41,7 +42,8 @@
                                 public static LocString 倒出提示 => 是中文() ? "装满后自动倒出存储的液体" : "Automatically pour out stored liquid when full";
                                 public static LocString 掉落提示 => 是中文() ? "装满后自动掉落存储的液体，可以罐装" : "Automatically drop stored liquid when full, can be bottled";
                                 public static LocString 不管提示 => 是中文() ? "装满后不做任何处理" : "Do nothing when full";
-                                public static LocString 需装满提示 => 是中文() ? "切换当杯子需装满/随时掉落" : "Only perform automatic actions when the cup is full";}
+
+                            }
                         }
                     }
                 }

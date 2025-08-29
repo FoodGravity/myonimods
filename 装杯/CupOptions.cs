@@ -21,14 +21,49 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     [Serialize] private HashSet<Tag> nowtags;
 
-    // 默认储存变量
-    [Serialize] public float userMaxCapacity = 0.03f;//用户设置目标容量
+
+
+    // 自动桶装设置
+    [Serialize] public bool 允许桶罐装 = true;
+
+    // 状态更新方法
+    private void RefreshChore()
+    {
+        if (filteredStorage != null)
+        {
+            if (允许桶罐装)
+            {
+                filteredStorage.RemoveForbiddenTag(GameTags.LiquidSource);
+                filteredStorage.RemoveForbiddenTag(GameTags.GasSource);
+            }
+            else
+            {
+                filteredStorage.AddForbiddenTag(GameTags.LiquidSource);
+                filteredStorage.AddForbiddenTag(GameTags.GasSource);
+
+            }
+            filteredStorage.FilterChanged();
+        }
+    }
+
+    // 自动桶装切换方法
+    public void 切换允许桶装()
+    {
+        允许桶罐装 = !允许桶罐装;
+        RefreshChore();
+    }
+
+
+
+    // 最大容量
+    [Serialize] public float userMaxCapacity = 1000f;
+
 
     // ISingleSliderControl 实现，滑条
 
-    public SingleSliderSideScreen 滑条组件;
+    private SingleSliderSideScreen 滑条组件;
     public string SliderTitleKey => "装杯滑条组件";
-    public string SliderUnits => CupStrings.BUILDINGS.PREFABS.CUP.UI.单位;
+    public string SliderUnits => GameUtil.GetCurrentMassUnit();
 
     public int SliderDecimalPlaces(int index) => 3;
 
@@ -69,7 +104,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     // INToggleSideScreenControl 实现
 
-
+    private NToggleSideScreen 切换组件;
     public string SidescreenTitleKey => "装满后自动操作";
 
     public List<LocString> Options => new List<LocString>
@@ -77,7 +112,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.倒出,
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.掉落,
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.不管,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.需装满
 };
 
     public List<LocString> Tooltips => new List<LocString>
@@ -85,13 +119,21 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.倒出提示,
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.掉落提示,
         CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.不管提示,
-        CupStrings.BUILDINGS.PREFABS.CUP.UI.ACTIONS.TOOLTIPS.需装满提示
 };
+    public string Description => 需装满文本(需装满) + "-" + CupStrings.BUILDINGS.PREFABS.CUP.UI.自动操作;
+    public string 需装满文本(bool 输入需装满)
+    {
+        return 输入需装满 ? (CupStrings.BUILDINGS.PREFABS.CUP.UI.装满 + "(" + Options[SelectedOption] + ")") :
+        (CupStrings.BUILDINGS.PREFABS.CUP.UI.随时 + "(" + Options[SelectedOption] + ")");
+    }
 
-    public string Description => 需装满 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.装满后 : CupStrings.BUILDINGS.PREFABS.CUP.UI.随时;
-
+    [Serialize]
     public bool 需装满 = true;
-
+    public void 切换需装满()
+    {
+        需装满 = !需装满;
+        切换组件?.SetTarget(gameObject);
+    }
     [Serialize]
     public int SelectedOption { get; set; } = 2;
 
@@ -99,24 +141,17 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public void QueueSelectedOption(int option)
     {
-        if (option == 3)
-        {
-            需装满 = !需装满;
-        }
-        else
-        {
-            SelectedOption = option;
-        }
+        SelectedOption = option;
+        Game.Instance.userMenu.Refresh(gameObject);
     }
 
     //自动移除勾选框
-    [Serialize] public bool autoRemove = true;
 
-    // public SingleCheckboxSideScreen 自动移除勾选框;
+    [Serialize] public bool autoRemove = true;
     public string CheckboxTitleKey => "装杯自动移除勾选框";
 
     public string CheckboxLabel => CupStrings.BUILDINGS.PREFABS.CUP.UI.自动移除;
-    public string CheckboxTooltip => CupStrings.BUILDINGS.PREFABS.CUP.UI.自动移除提示;
+    public string CheckboxTooltip => CheckboxLabel;
 
     public bool GetCheckboxValue() => autoRemove;
 
@@ -124,29 +159,11 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     //ui管理
 
-    private void 刷新切换组件(NToggleSideScreen 切换组件)
-    {
-        切换组件.SetTarget(gameObject);
-        // 强制刷新按钮状态
-        var buttons = 切换组件.GetComponentsInChildren<KToggle>();
-        foreach (var button in buttons)
-        {
-            var buttonText = button.GetComponentInChildren<LocText>();
-            if (buttonText != null && buttonText.text == Options[SelectedOption])
-            {
-                button.isOn = true;
-                var imageStates = button.GetComponentsInChildren<ImageToggleState>();
-                foreach (var state in imageStates)
-                {
-                    state.ResetColor();
-                }
-            }
-        }
-    }
+
 
     public void 检查ui()
     {
-        if ((滑条组件 == null) && DetailsScreen.Instance != null)
+        if ((滑条组件 == null || 切换组件 == null) && DetailsScreen.Instance != null)
         {
             // 使用反射获取私有字段
             var sideScreensField = typeof(DetailsScreen).GetField("sideScreens",
@@ -163,8 +180,23 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
                         var title = screenRef.screenInstance.GetTitle();
                         if (title.Contains(SidescreenTitleKey))
                         {
-
-                            刷新切换组件(screenRef.screenInstance.GetComponent<NToggleSideScreen>());
+                            切换组件 = screenRef.screenInstance.GetComponent<NToggleSideScreen>();
+                            切换组件.SetTarget(gameObject);
+                            // 强制刷新按钮状态
+                            var buttons = 切换组件.GetComponentsInChildren<KToggle>();
+                            foreach (var button in buttons)
+                            {
+                                var buttonText = button.GetComponentInChildren<LocText>();
+                                if (buttonText != null && buttonText.text == Options[SelectedOption])
+                                {
+                                    button.isOn = true;
+                                    var imageStates = button.GetComponentsInChildren<ImageToggleState>();
+                                    foreach (var state in imageStates)
+                                    {
+                                        state.ResetColor();
+                                    }
+                                }
+                            }
                         }
                         else if (title.Contains(SliderTitleKey))
                         {
@@ -198,7 +230,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             foreach (var tag in nowtags)
             {
                 var element = ElementLoader.GetElement(tag);
-                if (element != null)
+                if (element != null && element.substance != null)
                 {
                     mixedColor += element.substance.colour;
                     colornum++;
@@ -227,17 +259,30 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     // public string debugtext;
 
     //以下为默认函数
-
+    private StatusItem 桶装状态项;
     protected override void OnSpawn()
     {
         base.OnSpawn();
+
+        // 初始化状态项
+        桶装状态项 = new StatusItem("CupBottleOption", "", "", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID);
+        桶装状态项.resolveStringCallback = (str, data) =>
+            允许桶罐装 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.启用桶罐装 : CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装;
+        桶装状态项.resolveTooltipCallback = (str, data) =>
+            允许桶罐装 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.启用桶罐装提示 : CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装提示;
+
+        GetComponent<KSelectable>().SetStatusItem(Db.Get().StatusItemCategories.Main, 桶装状态项, this);
+
+
+
+
         if (filteredStorage == null)
         {
             filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
         }
-        UpdateStorageCapacity();
-        //初始化可以获取到meter、TreeFilterable
-        filteredStorage.FilterChanged();
+        //初始化才可以获取到meter、TreeFilterable
+        RefreshChore();
+
 
         // 初始化meter控制器
         meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
@@ -252,8 +297,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         }
 
         Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
-        // 初始更新颜色
-        UpdateMeterColor();
+
+        UpdateStorageCapacity();
 
     }
 
