@@ -11,7 +11,32 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     public FilteredStorage filteredStorage;
 
     private void OnStorageChanged(object data)
-    { UpdateMeterColor(); }
+    {
+        UpdateMeterColor();
+
+        // 获取Cup组件来执行存储逻辑
+        var cup = GetComponent<Cup>();
+        if (cup == null || filteredStorage == null)
+            return;
+
+        bool shouldProcess = !需装满;
+        if (需装满)
+        {
+            // 只有在需要装满模式时才检查IsFull
+            shouldProcess = filteredStorage.IsFull();
+        }
+        if (shouldProcess)
+        {
+            if (autoRemove && SelectedOption != 2)
+            {
+                OnDeconstruct();
+            }
+            else if (SelectedOption != 2)
+            {
+                storage?.DropAll(SelectedOption == 0, SelectedOption == 0);
+            }
+        }
+    }
 
     private void OnFilterChanged(HashSet<Tag> tags)
     {
@@ -156,6 +181,12 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     public bool GetCheckboxValue() => autoRemove;
 
     public void SetCheckboxValue(bool value) => autoRemove = value;
+
+    public void OnDeconstruct()
+    {
+        storage?.DropAll(SelectedOption == 0, SelectedOption == 0);
+        GetComponent<Cup>().gameObject.DeleteObject();
+    }
 
     //ui管理
 

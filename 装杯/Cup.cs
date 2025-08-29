@@ -1,6 +1,6 @@
 using UnityEngine;
 using 装杯;
-public class Cup : KMonoBehaviour, ISim1000ms
+public class Cup : KMonoBehaviour
 {
     private static readonly EventSystem.IntraObjectHandler<Cup> OnRefreshUserMenuDelegate =
         new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnRefreshUserMenu(data));
@@ -106,8 +106,7 @@ public class Cup : KMonoBehaviour, ISim1000ms
 
     public void OnDeconstruct()
     {
-        options?.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
-        gameObject.DeleteObject();
+        options?.OnDeconstruct();
     }
 
     public void OnCopySettings(object data)
@@ -128,23 +127,5 @@ public class Cup : KMonoBehaviour, ISim1000ms
         }
     }
 
-    public void Sim1000ms(float dt)
-    {
-        if (options == null || options.filteredStorage == null)
-            return;
 
-        bool shouldProcess = !options.需装满 || options.filteredStorage.IsFull();
-
-        if (shouldProcess)
-        {
-            if (options.autoRemove && options.SelectedOption != 2)
-            {
-                OnDeconstruct();
-            }
-            else if (options.SelectedOption != 2)
-            {
-                options.storage?.DropAll(options.SelectedOption == 0, options.SelectedOption == 0);
-            }
-        }
-    }
 }
