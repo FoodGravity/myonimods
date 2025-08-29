@@ -1,8 +1,19 @@
-﻿namespace 装杯
+﻿
+namespace 装杯
 {
     public static class CupStrings
     {
-        public static bool 是中文() => Localization.GetLocale()?.Code == "zh";
+        private static bool? _isChineseCache = null;
+
+        public static bool 是中文()
+        {
+            if (_isChineseCache == null)
+            {
+                _isChineseCache = Localization.GetLocale()?.Code == "zh";
+            }
+
+            return _isChineseCache.Value;
+        }
 
 
         public static class BUILDINGS
