@@ -13,11 +13,12 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     private void OnStorageChanged(object data)
     {
         UpdateMeterColor();
+        自动操作();
 
-        // 获取Cup组件来执行存储逻辑
-        var cup = GetComponent<Cup>();
-        if (cup == null || filteredStorage == null)
-            return;
+    }
+    private void 自动操作()
+    {
+        if (filteredStorage == null) return;
 
         bool shouldProcess = !需装满;
         if (需装满)
@@ -37,11 +38,11 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             }
         }
     }
-
     private void OnFilterChanged(HashSet<Tag> tags)
     {
         nowtags = tags;
         UpdateMeterColor();
+        自动操作();
     }
 
     [Serialize] private HashSet<Tag> nowtags;
@@ -52,7 +53,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     [Serialize] public bool 允许桶罐装 = true;
 
     // 状态更新方法
-    private void RefreshChore()
+    private void 设置禁止标签()
     {
         if (filteredStorage != null)
         {
@@ -75,7 +76,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     public void 切换允许桶装()
     {
         允许桶罐装 = !允许桶罐装;
-        RefreshChore();
+        设置禁止标签();
+        自动操作();
     }
 
 
@@ -98,7 +100,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public float GetSliderValue(int index) => userMaxCapacity;
 
-    public string GetSliderTooltip(int index) => $"{CupStrings.BUILDINGS.PREFABS.CUP.UI.最大容量提示}：{userMaxCapacity:0.###}{SliderUnits}";
+    public string GetSliderTooltip(int index) => CupStrings.BUILDINGS.PREFABS.CUP.UI.最大容量提示+": "+$"{userMaxCapacity:0.###}{SliderUnits}";
 
     public string GetSliderTooltipKey(int index) => "装杯滑条组件悬浮窗";
 
@@ -108,6 +110,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         UpdateSliderText();
         UpdateStorageCapacity();
         filteredStorage.FilterChanged();
+        自动操作();
     }
 
     public void UpdateSliderText()
@@ -158,6 +161,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     {
         需装满 = !需装满;
         切换组件?.SetTarget(gameObject);
+        自动操作();
     }
     [Serialize]
     public int SelectedOption { get; set; } = 2;
@@ -168,6 +172,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     {
         SelectedOption = option;
         Game.Instance.userMenu.Refresh(gameObject);
+        自动操作();
     }
 
     //自动移除勾选框
@@ -180,7 +185,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public bool GetCheckboxValue() => autoRemove;
 
-    public void SetCheckboxValue(bool value) => autoRemove = value;
+    public void SetCheckboxValue(bool value) { autoRemove = value; 自动操作(); }
 
     public void OnDeconstruct()
     {
@@ -325,7 +330,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
         }
         //初始化才可以获取到meter、TreeFilterable
-        RefreshChore();
+        设置禁止标签();
 
 
         // 初始化meter控制器
