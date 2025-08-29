@@ -163,54 +163,77 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public void 检查ui()
     {
-        if ((滑条组件 == null || 切换组件 == null) && DetailsScreen.Instance != null)
+        // 如果组件已经找到，直接返回
+        if (滑条组件 != null && 切换组件 != null)
+            return;
+
+        if (DetailsScreen.Instance == null)
+            return;
+
+        // 优化查找逻辑：直接查找对应的侧边栏组件
+        查找并设置侧边栏组件();
+    }
+
+    private void 查找并设置侧边栏组件()
+    {
+        // 方法1：通过DetailsScreen的子组件查找（更稳定）
+        var allSideScreens = DetailsScreen.Instance.GetComponentsInChildren<SideScreenContent>(true);
+
+        foreach (var sideScreen in allSideScreens)
         {
-            // 使用反射获取私有字段
-            var sideScreensField = typeof(DetailsScreen).GetField("sideScreens",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (sideScreen == null || !sideScreen.gameObject.activeInHierarchy)
+                continue;
 
-            if (sideScreensField != null)
+            var title = sideScreen.GetTitle();
+
+            // 使用更精确的匹配条件
+            if (title.Contains(SidescreenTitleKey) && 切换组件 == null)
             {
-                if (sideScreensField.GetValue(DetailsScreen.Instance) is List<DetailsScreen.SideScreenRef> sideScreens)
+                切换组件 = sideScreen.GetComponent<NToggleSideScreen>();
+                if (切换组件 != null)
                 {
-                    foreach (var screenRef in sideScreens)
-                    {
-                        if (screenRef.screenInstance == null) continue;
+                    刷新切换组件状态();
+                }
+            }
+            else if (title.Contains(SliderTitleKey) && 滑条组件 == null)
+            {
+                滑条组件 = sideScreen.GetComponent<SingleSliderSideScreen>();
+                if (滑条组件 != null)
+                {
+                    UpdateSliderText();
+                }
+            }
 
-                        var title = screenRef.screenInstance.GetTitle();
-                        if (title.Contains(SidescreenTitleKey))
-                        {
-                            切换组件 = screenRef.screenInstance.GetComponent<NToggleSideScreen>();
-                            切换组件.SetTarget(gameObject);
-                            // 强制刷新按钮状态
-                            var buttons = 切换组件.GetComponentsInChildren<KToggle>();
-                            foreach (var button in buttons)
-                            {
-                                var buttonText = button.GetComponentInChildren<LocText>();
-                                if (buttonText != null && buttonText.text == Options[SelectedOption])
-                                {
-                                    button.isOn = true;
-                                    var imageStates = button.GetComponentsInChildren<ImageToggleState>();
-                                    foreach (var state in imageStates)
-                                    {
-                                        state.ResetColor();
-                                    }
-                                }
-                            }
-                        }
-                        else if (title.Contains(SliderTitleKey))
-                        {
-                            滑条组件 = screenRef.screenInstance.GetComponent<SingleSliderSideScreen>();
-                            UpdateSliderText();
-                        }
-                    }
+            // 如果两个组件都找到了，就可以停止查找
+            if (滑条组件 != null && 切换组件 != null)
+                break;
+        }
+
+    }
+
+
+    public static bool 需要刷新切换组件 = true;
+    private void 刷新切换组件状态()
+    {
+        if (!需要刷新切换组件) { return; }
+        if (切换组件 == null) return;
+        切换组件.SetTarget(gameObject);
+        // 强制刷新按钮状态
+        var buttons = 切换组件.GetComponentsInChildren<KToggle>();
+        foreach (var button in buttons)
+        {
+            var buttonText = button.GetComponentInChildren<LocText>();
+            if (buttonText != null && buttonText.text == Options[SelectedOption])
+            {
+                button.isOn = true;
+                var imageStates = button.GetComponentsInChildren<ImageToggleState>();
+                foreach (var state in imageStates)
+                {
+                    state.ResetColor();
                 }
             }
         }
-        // if (切换组件 != null)
-        // {
-        //     刷新切换组件(切换组件);
-        // }
+        需要刷新切换组件 = false;
     }
 
     // 材质控制

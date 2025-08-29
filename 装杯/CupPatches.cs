@@ -92,6 +92,15 @@ public static class BuildingDef_Instantiate_Patch
 
     }
 }
+[HarmonyPatch(typeof(Game), "DestroyInstances")]
+public static class Game_DestroyInstances_Patch
+{
+    public static void Postfix()
+    {
+        // 游戏结束时重置标志
+        CupOptions.需要刷新切换组件 = true;
+    }
+}
 
 
 // 新增UI相关补丁
