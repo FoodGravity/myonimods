@@ -1,0 +1,90 @@
+action_attack
+action_bottler_delivery
+action_building_disabled
+action_cancel
+action_capture
+action_carve
+action_clearance
+action_compost
+action_control
+action_deconstruct
+action_direction
+action_direction_both
+action_direction_left
+action_direction_right
+action_disinfect
+action_empty_contents
+action_fish
+action_follow_cam
+action_harvest
+action_meatify
+action_mirror
+action_move_to_storage
+action_navigable_regions
+action_pacify
+action_power
+action_priority
+action_quarantine
+action_repair
+action_rocket_restriction_controlled
+action_rocket_restriction_uncontrolled
+action_select_research
+action_speed_up
+action_switch_toggle
+action_uproots
+
+以下是游戏/操作类常见动作指令的原文与中文翻译对照，已按场景逻辑分类整理，便于理解不同指令的应用场景：
+
+
+### 一、核心操作与功能指令
+| 原文 | 中文翻译 | 说明（适用场景参考） |
+|------|----------|----------------------|
+| action_attack | 攻击指令 | 对目标发起攻击（如游戏中角色/单位攻击敌人） |
+| action_cancel | 取消指令 | 撤销当前正在执行或选中的操作 |
+| action_clearance | 通行权限设置 | 配置区域/通道的通行许可（如限制特定单位进入） |
+| action_control | 控制指令 | 接管目标（如单位、设备）的操控权 |
+| action_deconstruct | 拆除指令 | 拆除已建造的建筑、设施或结构 |
+| action_direction | 方向指令 | 控制方向（通用方向调节，无固定左右倾向） |
+| action_direction_both | 双向指令 | 设置为双向模式（如通道双向通行、设备双向运作） |
+| action_direction_left | 向左指令 | 控制目标向左移动/调节（如角色移动、设备转向） |
+| action_direction_right | 向右指令 | 控制目标向右移动/调节（如角色移动、设备转向） |
+| action_follow_cam | 镜头跟随指令 | 开启镜头跟随模式（如跟随角色/单位移动） |
+| action_mirror | 镜像指令 | 以镜像方式复制操作/结构（如建造时镜像布局） |
+| action_priority | 优先级设置 | 调整操作/任务的优先级（如让单位优先执行某任务） |
+| action_power | 能源控制指令 | 控制设备的电源（如开启/关闭设备供电） |
+| action_speed_up | 加速指令 | 提升当前操作/任务的执行速度（如加速建造、生产） |
+| action_switch_toggle | 切换开关指令 | 切换设备/功能的开关状态（如开启/关闭某功能） |
+
+
+### 二、资源采集与处理指令
+| 原文 | 中文翻译 | 说明（适用场景参考） |
+|------|----------|----------------------|
+| action_bottler_delivery | 装瓶配送指令 | 完成装瓶操作后配送物品（如液体装瓶后运至目标点） |
+| action_carve | 切割/采集指令 | 对目标进行切割以获取资源（如切割矿石、木材） |
+| action_compost | 堆肥指令 | 将有机物转化为堆肥（如农业/生态类游戏中处理废料） |
+| action_empty_contents | 清空内容物指令 | 清空容器/设备内的物品（如清空储物箱、液体罐） |
+| action_fish | 捕鱼指令 | 执行捕鱼操作（如在水域获取鱼类资源） |
+| action_harvest | 收获指令 | 采集成熟的资源（如农作物、植物、矿物） |
+| action_meatify | 肉类加工指令 | 将食材/资源转化为肉类（如游戏中处理生物尸体获取肉） |
+| action_move_to_storage | 移至储存点指令 | 将物品搬运到指定储存区域（如资源回收、物品整理） |
+| action_uproot | 连根拔除指令 | 将植物从根部移除（如清理杂草、移植植物前的拔除） |
+
+
+### 三、区域/状态管理指令
+| 原文 | 中文翻译 | 说明（适用场景参考） |
+|------|----------|----------------------|
+| action_building_disabled | 建筑禁用指令 | 使指定建筑停止运作（非拆除，仅禁用功能） |
+| action_capture | 捕获指令 | 捕获目标（如捕获敌方单位、野生生物、特定区域） |
+| action_disinfect | 消毒指令 | 对区域/物品进行消毒（如处理污染区域、防疫场景） |
+| action_navigable_regions | 可通行区域设置 | 标记或调整可通行的区域（如规划单位移动路径） |
+| action_pacify | 安抚/平定指令 | 使目标恢复平静（如安抚狂暴单位、平定混乱区域） |
+| action_quarantine | 隔离指令 | 将目标（单位/区域）隔离（如防疫、限制污染扩散） |
+| action_repair | 修复指令 | 修复受损的建筑、设备或单位（恢复功能/生命值） |
+
+
+### 四、特殊系统指令
+| 原文 | 中文翻译 | 说明（适用场景参考） |
+|------|----------|----------------------|
+| action_rocket_restriction_controlled | 火箭受控限制指令 | 对火箭设置受控的限制（如限制火箭发射条件、路径） |
+| action_rocket_restriction_uncontrolled | 火箭非受控限制指令 | 对火箭设置非受控的限制（如紧急情况下强制限制） |
+| action_select_research | 选择研究项目指令 | 在科技树中选中要研发的项目（如解锁新功能、技术） |
