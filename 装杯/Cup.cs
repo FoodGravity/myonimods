@@ -44,8 +44,6 @@ public class Cup : KMonoBehaviour
 
     private void OnRefreshUserMenu(object data)
     {
-
-        // nowCup = options;
         if (this.HasTag(GameTags.Stored))
             return;
         if (options != null)
@@ -58,15 +56,13 @@ public class Cup : KMonoBehaviour
                 tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.移除提示), 0.0f);
 
             Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-                "action_empty_contents",
-                options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 : CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品,
-                () =>
-                {
-                    options.storage.allowItemRemoval = !options.storage.allowItemRemoval;
-                    options.storage.RenotifyAll();
-                },
-                tooltipText: options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 : CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品), 0.0f);
+                "action_switch_toggle",
+                CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满),
+                options.切换需装满,
+                tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满)
+                ), 0.4f);
 
+            //添加允许桶装按钮
             string tooltip = options.允许桶罐装 ?
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装提示 :
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.启用桶罐装提示;
@@ -87,14 +83,20 @@ public class Cup : KMonoBehaviour
                 tooltipText: tooltip), 0.4f);
 
             Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-                "action_switch_toggle",
-                CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满),
-                options.切换需装满,
-                tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满)
-                ), 0.4f);
+                 "action_empty_contents",
+                  options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
+                    CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品,
+                 () =>
+                 {
+                     options.storage.allowItemRemoval = !options.storage.allowItemRemoval;
+                     options.storage.RenotifyAll();
+                 },
+                 tooltipText: options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
+                 CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品), 0.0f);
 
+            options.检查ui();
         }
-        options?.检查ui();
+
         // if (options != null && options.debugtext != null)
         // {
         //     Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(

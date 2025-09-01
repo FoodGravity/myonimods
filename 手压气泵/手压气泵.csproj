@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B57E1657-EB13-4EDD-B08F-7009E924FC30}</ProjectGuid>
+    <ProjectGuid>{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>手压气泵</RootNamespace>

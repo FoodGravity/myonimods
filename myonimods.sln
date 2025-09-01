@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{02EA681E-C7D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "装杯", "装杯\装杯.csproj", "{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "手压气泵", "手压气泵\手压气泵.csproj", "{B57E1657-EB13-4EDD-B08F-7009E924FC30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "手压气泵", "手压气泵\手压气泵.csproj", "{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +43,10 @@ Global
 		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7DAF18-69CB-4A88-AF39-F9811912B3A1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B57E1657-EB13-4EDD-B08F-7009E924FC30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B57E1657-EB13-4EDD-B08F-7009E924FC30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B57E1657-EB13-4EDD-B08F-7009E924FC30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B57E1657-EB13-4EDD-B08F-7009E924FC30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
