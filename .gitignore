@@ -1,0 +1,38 @@
+# 编译输出目录
+bin/
+obj/
+
+# Visual Studio 用户设置
+*.user
+*.suo
+
+# Visual Studio 目录
+.vs/
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# 备份文件
+*.bak
+*.backup
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# IDE 设置
+.vscode/settings.json
+.idea/
+
+# 包文件
+*.zip
+*.rar
+
+# 其他不需要上传的文件
+*.pdb
+*.dll.config
+
+# 特定于ONI模组的文件（如果有）
+# 添加任何其他不需要的编译或生成文件

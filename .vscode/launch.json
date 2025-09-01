@@ -5,7 +5,18 @@
             "name": "BuildRun装杯",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "Build Mod",
+            "preLaunchTask": "zhuangbei",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "stopAtEntry": false
+        },
+        {
+            "name": "BuildRun手压",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "shouya",
+
             "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
             "args": [],
             "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
