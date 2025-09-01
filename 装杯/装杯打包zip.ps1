@@ -18,7 +18,7 @@ $modInfoContent = $modInfoContent -replace "version: $currentVersion", "version:
 $modInfoContent | Set-Content $modInfoPath
 
 # 定义输出ZIP文件路径（带版本号）
-$outputZip = "D:\onimod\myonimods\装杯_v$newVersion.zip"
+$outputZip = "D:\onimod\myonimods\装杯\装杯_v$newVersion.zip"
 
 # 如果ZIP文件已存在则删除
 if (Test-Path $outputZip) {
