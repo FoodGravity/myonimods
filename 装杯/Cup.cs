@@ -1,18 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
 using 装杯;
 public class Cup : KMonoBehaviour
 {
-    private static readonly EventSystem.IntraObjectHandler<Cup> OnRefreshUserMenuDelegate =
-        new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnRefreshUserMenu(data));
+    // private static readonly EventSystem.IntraObjectHandler<Cup> OnRefreshUserMenuDelegate =
+    //     new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnRefreshUserMenu(data));
 
     // private static readonly EventSystem.IntraObjectHandler<Cup> OnUIRefreshDelegate =
     //      new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnUIRefresh(data));
 
-    private static readonly EventSystem.IntraObjectHandler<Cup> OnDeconstructDelegate =
-        new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnDeconstruct());
+    // private static readonly EventSystem.IntraObjectHandler<Cup> OnDeconstructDelegate =
+    //     new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnDeconstruct(data));
 
-    private static readonly EventSystem.IntraObjectHandler<Cup> OnCopySettingsDelegate =
-        new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnCopySettings(data));
+
+    // private static readonly EventSystem.IntraObjectHandler<Cup> OnCopySettingsDelegate =
+    //     new EventSystem.IntraObjectHandler<Cup>((component, data) => component.OnCopySettings(data));
 
     [MyCmpGet]
     public CupOptions options;
@@ -21,21 +23,18 @@ public class Cup : KMonoBehaviour
     {
         base.OnPrefabInit();
         // gameObject.Subscribe<Cup>(1980521255, Cup.OnUIRefreshDelegate);
-        gameObject.Subscribe<Cup>(493375141, Cup.OnRefreshUserMenuDelegate);
-        gameObject.Subscribe<Cup>(-111137758, Cup.OnRefreshUserMenuDelegate);//StatusChange
-        gameObject.Subscribe<Cup>(-790448070, Cup.OnDeconstructDelegate);
+        gameObject.Subscribe((int)GameHashes.RefreshUserMenu, OnRefreshUserMenu);
+        // gameObject.Subscribe((int)GameHashes.StatusChange, OnRefreshUserMenu);
+        gameObject.Subscribe((int)GameHashes.MarkForDeconstruct, OnDeconstruct);
+
     }
 
     protected override void OnSpawn()
     {
         base.OnSpawn();
-        Subscribe((int)GameHashes.CopySettings, OnCopySettingsDelegate);
-
-        // 确保CupOptions组件存在
-        if (options == null)
-        {
-            options = gameObject.AddComponent<CupOptions>();
-        }
+        gameObject.Subscribe((int)GameHashes.CopySettings, OnCopySettings);
+        // if (options == null) { options = gameObject.AddComponent<CupOptions>(); }
+        gameObject.Subscribe((int)GameHashes.OnStorageChange, options.OnStorageChanged);
     }
 
     // public void OnUIRefresh(object data)
@@ -49,18 +48,25 @@ public class Cup : KMonoBehaviour
         // nowCup = options;
         if (this.HasTag(GameTags.Stored))
             return;
-
-        // 添加移除按钮
-        Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-            "action_deconstruct",
-            CupStrings.BUILDINGS.PREFABS.CUP.UI.移除,
-            new System.Action(OnDeconstruct),
-            tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.移除提示), 0.0f);
-
-
-
         if (options != null)
         {
+            // 添加移除按钮
+            Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+                "action_deconstruct",
+                CupStrings.BUILDINGS.PREFABS.CUP.UI.移除,
+                 options.OnDeconstruct,
+                tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.移除提示), 0.0f);
+
+            Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+                "action_empty_contents",
+                options.storage.allowItemRemoval ? "禁止提取物品" : "允许提取物品",
+                () =>
+                {
+                    options.storage.allowItemRemoval = !options.storage.allowItemRemoval;
+                    options.storage.RenotifyAll();
+                },
+                tooltipText: options.storage.allowItemRemoval ? "禁止提取物品" : "允许提取物品"), 0.0f);
+
             string tooltip = options.允许桶罐装 ?
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装提示 :
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.启用桶罐装提示;
@@ -81,30 +87,27 @@ public class Cup : KMonoBehaviour
                 tooltipText: tooltip), 0.4f);
 
             Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-                "action_empty_contents",
+                "action_switch_toggle",
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满),
                 options.切换需装满,
                 tooltipText: CupStrings.BUILDINGS.PREFABS.CUP.UI.切换 + options.需装满文本(!options.需装满)
                 ), 0.4f);
+
         }
         options?.检查ui();
-        // if (options != null)
+        // if (options != null && options.debugtext != null)
         // {
-        //     options.检查ui();
-        //     // if (options.debugtext != null)
-        //     // {
-        //     //     Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
-        //     //          "a",
-        //     //          options.debugtext,
-        //     //          null,
-        //     //          tooltipText: options.debugtext), 0.0f);
-        //     // }
+        //     Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
+        //          "a",
+        //          options.debugtext,
+        //          null,
+        //          tooltipText: options.debugtext), 0.0f);
         // }
     }
 
 
 
-    public void OnDeconstruct()
+    public void OnDeconstruct(object data)
     {
         options?.OnDeconstruct();
     }

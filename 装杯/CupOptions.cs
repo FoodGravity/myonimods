@@ -5,20 +5,31 @@ using 装杯;
 
 public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScreenControl, ICheckboxControl
 {
+
+    // public string debugtext;
     [MyCmpGet]
     public Storage storage;
 
     public FilteredStorage filteredStorage;
 
-    private void OnStorageChanged(object data)
+    public void OnStorageChanged(object data)
     {
         UpdateMeterColor();
         自动操作();
 
     }
+
+    private void OnFilterChanged(HashSet<Tag> tags)
+    {
+        nowtags = tags;
+        UpdateMeterColor();
+        自动操作();
+    }
     private void 自动操作()
     {
         if (filteredStorage == null) return;
+
+        if (storage.IsEmpty()) return;
 
         bool shouldProcess = !需装满;
         if (需装满)
@@ -38,13 +49,53 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             }
         }
     }
-    private void OnFilterChanged(HashSet<Tag> tags)
+    public void OnDeconstruct()
     {
-        nowtags = tags;
-        UpdateMeterColor();
-        自动操作();
+        storage?.DropAll(SelectedOption == 0, SelectedOption == 0);
+        GetComponent<Cup>().gameObject.DeleteObject();
     }
+    // 材质控制
+    private MeterController meter;
 
+    private void UpdateMeterColor()
+    {
+        if (meter == null) return;
+        if (storage == null) return;
+
+        if (nowtags != null && nowtags.Count > 0)
+        {
+            // 颜色混合逻辑
+            Color mixedColor = Color.clear;
+            int colornum = 0;
+
+            foreach (var tag in nowtags)
+            {
+                var element = ElementLoader.GetElement(tag);
+                if (element != null && element.substance != null)
+                {
+                    mixedColor += element.substance.colour;
+                    colornum++;
+                }
+            }
+
+            if (colornum > 0)
+            {
+                // 平均混合颜色
+                mixedColor /= colornum;
+                meter.SetSymbolTint("meter_level", mixedColor);
+            }
+            else
+            {
+                meter.SetSymbolTint("meter_level", Color.white);
+            }
+        }
+        else
+        {
+            meter.SetSymbolTint("meter_level", Color.white);
+        }
+
+        meter.SetPositionPercent(storage.MassStored() / storage.capacityKg);
+    }
     [Serialize] private HashSet<Tag> nowtags;
 
 
@@ -100,7 +151,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public float GetSliderValue(int index) => userMaxCapacity;
 
-    public string GetSliderTooltip(int index) => CupStrings.BUILDINGS.PREFABS.CUP.UI.最大容量提示+": "+$"{userMaxCapacity:0.###}{SliderUnits}";
+    public string GetSliderTooltip(int index) => CupStrings.BUILDINGS.PREFABS.CUP.UI.最大容量提示 + ": " + $"{userMaxCapacity:0.###}{SliderUnits}";
 
     public string GetSliderTooltipKey(int index) => "装杯滑条组件悬浮窗";
 
@@ -161,6 +212,12 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     {
         需装满 = !需装满;
         切换组件?.SetTarget(gameObject);
+        if (!需装满 && autoRemove)
+        {
+            autoRemove = false;
+            自动移除组件.SetTarget(gameObject);
+
+        }
         自动操作();
     }
     [Serialize]
@@ -176,7 +233,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     }
 
     //自动移除勾选框
-
+    private SingleCheckboxSideScreen 自动移除组件;
     [Serialize] public bool autoRemove = true;
     public string CheckboxTitleKey => "装杯自动移除勾选框";
 
@@ -187,11 +244,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public void SetCheckboxValue(bool value) { autoRemove = value; 自动操作(); }
 
-    public void OnDeconstruct()
-    {
-        storage?.DropAll(SelectedOption == 0, SelectedOption == 0);
-        GetComponent<Cup>().gameObject.DeleteObject();
-    }
+
 
     //ui管理
 
@@ -200,7 +253,8 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
     public void 检查ui()
     {
         // 如果组件已经找到，直接返回
-        if (滑条组件 != null && 切换组件 != null)
+        if (滑条组件 != null && 切换组件 != null && 自动移除组件 != null)
+
             return;
 
         if (DetailsScreen.Instance == null)
@@ -232,9 +286,15 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
                     UpdateSliderText();
                 }
             }
+            else if (title.Contains(CheckboxTitleKey) && 自动移除组件 == null)
+            {
+                自动移除组件 = sideScreen.GetComponent<SingleCheckboxSideScreen>();
+            }
+
 
             // 如果两个组件都找到了，就可以停止查找
-            if (滑条组件 != null && 切换组件 != null)
+            if (滑条组件 != null && 切换组件 != null && 自动移除组件 != null)
+
                 break;
         }
     }
@@ -262,50 +322,9 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         需要刷新切换组件 = false;
     }
 
-    // 材质控制
-    private MeterController meter;
 
-    private void UpdateMeterColor()
-    {
-        if (meter == null) return;
-        if (storage == null) return;
 
-        if (nowtags != null && nowtags.Count > 0)
-        {
-            // 颜色混合逻辑
-            Color mixedColor = Color.clear;
-            int colornum = 0;
 
-            foreach (var tag in nowtags)
-            {
-                var element = ElementLoader.GetElement(tag);
-                if (element != null && element.substance != null)
-                {
-                    mixedColor += element.substance.colour;
-                    colornum++;
-                }
-            }
-
-            if (colornum > 0)
-            {
-                // 平均混合颜色
-                mixedColor /= colornum;
-                meter.SetSymbolTint("meter_level", mixedColor);
-            }
-            else
-            {
-                meter.SetSymbolTint("meter_level", Color.white);
-            }
-        }
-        else
-        {
-            meter.SetSymbolTint("meter_level", Color.white);
-        }
-
-        meter.SetPositionPercent(storage.MassStored() / storage.capacityKg);
-    }
-
-    // public string debugtext;
 
     //以下为默认函数
     private StatusItem 桶装状态项;
@@ -321,8 +340,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             允许桶罐装 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.启用桶罐装提示 : CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装提示;
 
         GetComponent<KSelectable>().SetStatusItem(Db.Get().StatusItemCategories.Main, 桶装状态项, this);
-
-
 
 
         if (filteredStorage == null)
@@ -345,7 +362,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             treeFilterable.OnFilterChanged += OnFilterChanged;
         }
 
-        Subscribe((int)GameHashes.OnStorageChange, OnStorageChanged);
 
         UpdateStorageCapacity();
 

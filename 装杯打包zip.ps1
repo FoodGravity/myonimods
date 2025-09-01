@@ -6,8 +6,19 @@ $filesToPack = @(
     "D:\onimod\myonimods\装杯\anim"
 )
 
-# 定义输出ZIP文件路径
-$outputZip = "D:\onimod\myonimods\装杯.zip"
+# 读取并更新 mod_info.yaml 版本号
+$modInfoPath = "D:\onimod\myonimods\装杯\mod_info.yaml"
+$modInfoContent = Get-Content $modInfoPath
+$versionLine = $modInfoContent | Where-Object { $_ -match '^version:\s*(\d+\.\d+\.\d+)' }
+$currentVersion = $matches[1]
+$versionParts = $currentVersion.Split('.')
+$versionParts[2] = [int]$versionParts[2] + 1
+$newVersion = $versionParts -join '.'
+$modInfoContent = $modInfoContent -replace "version: $currentVersion", "version: $newVersion"
+$modInfoContent | Set-Content $modInfoPath
+
+# 定义输出ZIP文件路径（带版本号）
+$outputZip = "D:\onimod\myonimods\装杯_v$newVersion.zip"
 
 # 如果ZIP文件已存在则删除
 if (Test-Path $outputZip) {
