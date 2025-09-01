@@ -59,13 +59,13 @@ public class Cup : KMonoBehaviour
 
             Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
                 "action_empty_contents",
-                options.storage.allowItemRemoval ? "禁止提取物品" : "允许提取物品",
+                options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 : CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品,
                 () =>
                 {
                     options.storage.allowItemRemoval = !options.storage.allowItemRemoval;
                     options.storage.RenotifyAll();
                 },
-                tooltipText: options.storage.allowItemRemoval ? "禁止提取物品" : "允许提取物品"), 0.0f);
+                tooltipText: options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 : CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品), 0.0f);
 
             string tooltip = options.允许桶罐装 ?
                 CupStrings.BUILDINGS.PREFABS.CUP.UI.禁用桶罐装提示 :

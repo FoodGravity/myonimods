@@ -31,6 +31,8 @@ namespace 装杯
                     {
                         public static LocString 移除 => 是中文() ? "移除" : "Remove";
                         public static LocString 移除提示 => 是中文() ? "移除杯子，东西掉出来" : "Remove the cup, things drop out";
+                        public static LocString 禁止提取物品 => 是中文() ? "禁止提取物品" : "Disable item removal";
+                        public static LocString 允许提取物品 => 是中文() ? "允许提取物品" : "Enable item removal";
                         public static LocString 自动操作 => 是中文() ? "自动操作" : "AutoAction";
                         public static LocString 最大容量提示 => 是中文() ? "最大容量" : "Max";
                         public static LocString 装满 => 是中文() ? "装满后" : "When full";
