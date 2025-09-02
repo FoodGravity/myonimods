@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using 装杯;
 public class Cup : KMonoBehaviour
@@ -33,8 +32,11 @@ public class Cup : KMonoBehaviour
     {
         base.OnSpawn();
         gameObject.Subscribe((int)GameHashes.CopySettings, OnCopySettings);
-        // if (options == null) { options = gameObject.AddComponent<CupOptions>(); }
-        gameObject.Subscribe((int)GameHashes.OnStorageChange, options.OnStorageChanged);
+        if (options == null) { options = gameObject.AddComponent<CupOptions>(); }
+        if (options != null)
+        {
+            gameObject.Subscribe((int)GameHashes.OnStorageChange, options.OnStorageChanged);
+        }
     }
 
     // public void OnUIRefresh(object data)

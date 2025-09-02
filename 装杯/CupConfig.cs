@@ -42,8 +42,8 @@ public class CupConfig : IBuildingConfig
         buildingDef.Disinfectable = false;
         buildingDef.Invincible = true;
 
-        buildingDef.SceneLayer = Grid.SceneLayer.SceneMAX;   // 使用最高场景层
-        buildingDef.ObjectLayer = ObjectLayer.MovePlacer;  // 移动放置器层
+        buildingDef.SceneLayer = Grid.SceneLayer.SceneMAX;
+        buildingDef.ObjectLayer = ObjectLayer.AttachableBuilding;
 
         return buildingDef;
     }
@@ -65,8 +65,6 @@ public class CupConfig : IBuildingConfig
         // 添加必要组件
         go.AddOrGet<Cup>();
         go.AddOrGet<CupOptions>();
-
-
         // go.AddOrGetDef<RocketUsageRestriction.Def>();//火箭不能用
 
         // 移除不需要的组件
