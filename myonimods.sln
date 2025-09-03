@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "装杯", "装杯\装杯.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "手压气泵", "手压气泵\手压气泵.csproj", "{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "直线建造", "直线建造\直线建造.csproj", "{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB7D180F-AA59-4434-8B0A-6DD64DD2999D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

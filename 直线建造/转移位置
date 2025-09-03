@@ -1,0 +1,4 @@
+mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\直线建造"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\直线建造\直线建造.dll" "D:\onimod\myonimods\直线建造\bin\Debug\直线建造.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\直线建造\mod_info.yaml" "D:\onimod\myonimods\直线建造\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\直线建造\mod.yaml" "D:\onimod\myonimods\直线建造\mod.yaml"

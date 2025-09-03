@@ -26,7 +26,21 @@
             ],
             "group": "build",
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "直线建造",
+            "command": "F:\\Clink\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "type": "shell",
+            "args": [
+                "/p:Configuration=Debug",
+                "/p:Platform=AnyCPU", 
+                "/t:Build",
+                "${workspaceFolder}/直线建造/直线建造.csproj"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile"
         }
+
 
     ]
 }
