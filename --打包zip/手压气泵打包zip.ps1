@@ -1,13 +1,12 @@
 ﻿# 定义要打包的文件和文件夹路径
 $filesToPack = @(
-    "D:\onimod\myonimods\装杯\bin\Debug\装杯.dll",
-    "D:\onimod\myonimods\装杯\mod_info.yaml",
-    "D:\onimod\myonimods\装杯\mod.yaml",
-    "D:\onimod\myonimods\装杯\anim"
+    "D:\onimod\myonimods\手压气泵\bin\Debug\手压气泵.dll",
+    "D:\onimod\myonimods\手压气泵\mod_info.yaml",
+    "D:\onimod\myonimods\手压气泵\mod.yaml"
 )
 
 # 读取并更新 mod_info.yaml 版本号
-$modInfoPath = "D:\onimod\myonimods\装杯\mod_info.yaml"
+$modInfoPath = "D:\onimod\myonimods\手压气泵\mod_info.yaml"
 $modInfoContent = Get-Content $modInfoPath
 $modInfoContent | Where-Object { $_ -match '^version:\s*(\d+\.\d+\.\d+)' } | Out-Null
 $currentVersion = $matches[1]
@@ -18,7 +17,7 @@ $modInfoContent = $modInfoContent -replace "version: $currentVersion", "version:
 $modInfoContent | Set-Content $modInfoPath
 
 # 定义输出ZIP文件路径（带版本号）
-$outputZip = "D:\onimod\myonimods\装杯\装杯_v$newVersion.zip"
+$outputZip = "D:\onimod\myonimods\--打包zip\手压气泵_v$newVersion.zip"
 
 # 如果ZIP文件已存在则删除
 if (Test-Path $outputZip) {
@@ -26,7 +25,7 @@ if (Test-Path $outputZip) {
 }
 
 # 创建临时目录
-$tempDir = "D:\onimod\myonimods\装杯_temp"
+$tempDir = "D:\onimod\myonimods\手压气泵_temp"
 if (Test-Path $tempDir) {
     Remove-Item $tempDir -Recurse -Force
 }
