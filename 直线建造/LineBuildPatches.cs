@@ -5,171 +5,152 @@ using System.Collections.Generic;
 
 namespace 直线建造
 {
+    /// 直线建造状态管理类
+    /// 存储拖拽建造过程中的所有状态信息
     public static class LineBuildState
     {
+        /// 拖拽起始单元格的索引，-1表示未开始拖拽
         public static int dragStartCell = -1;
-        public static int dragDirectionX = 0;
-        public static int dragDirectionY = 0;
+        public static int lastCell = -1;
+        /// 拖拽轴向，0表示未确定，1表示X轴，2表示Y轴
+        public static int dragAxis = 0;
+
+        /// 是否正在进行直线拖拽建造
         public static bool isDragging = false;
-        public static int lastBuiltDistance = -1;
-        public static HashSet<int> builtCells = new HashSet<int>();
-        public static bool directionLocked = false;
+
     }
 
+    /// 修补DragTool的OnLeftClickDown方法
+    /// 在鼠标左键按下时初始化直线建造状态
     [HarmonyPatch(typeof(DragTool), "OnLeftClickDown")]
     public class DragTool_OnLeftClickDown_Patch
     {
+
         static void Postfix(DragTool __instance, Vector3 cursor_pos)
         {
+            // 只对BuildTool生效，其他工具（如挖掘工具）不处理
             if (__instance is BuildTool)
             {
+                // 将鼠标位置转换为网格单元格索引
                 int cell = Grid.PosToCell(cursor_pos);
-                LineBuildState.dragStartCell = cell;
-                LineBuildState.dragDirectionX = 0;
-                LineBuildState.dragDirectionY = 0;
-                LineBuildState.isDragging = true;
-                LineBuildState.lastBuiltDistance = -1;
-                LineBuildState.builtCells.Clear();
-                LineBuildState.directionLocked = false;
+
+                // 初始化直线建造状态
+                LineBuildState.dragStartCell = cell;        // 记录起始单元格
+                LineBuildState.dragAxis = 0;                // 重置轴向
+                LineBuildState.isDragging = true;           // 标记开始拖拽
 
                 // 在起始位置建造第一个建筑
                 if (Grid.IsValidCell(cell) && Grid.IsVisible(cell))
                 {
+                    // 调用原BuildTool的OnDragTool方法来建造建筑
                     Traverse.Create(__instance).Method("OnDragTool", cell, 0).GetValue();
-                    LineBuildState.builtCells.Add(cell);
+                    LineBuildState.lastCell = cell;
                 }
             }
         }
     }
 
+    /// 修补DragTool的AddDragPoints方法
+    /// 替换原有的拖拽点添加逻辑，实现直线建造
     [HarmonyPatch(typeof(DragTool), "AddDragPoints")]
     public class DragTool_AddDragPoints_Patch
     {
-        static bool Prefix(DragTool __instance, Vector3 cursorPos, Vector3 previousCursorPos)
+        /// 沿着指定轴向建造建筑的辅助方法
+        private static int BuildAlongAxis(DragTool instance, int lastCoord, int currentCoord, int fixedCoord, bool isXAxis)
         {
-            if (!(__instance is BuildTool))
+            int delta = currentCoord - lastCoord;
+            int steps = Mathf.Abs(delta);
+            int direction = delta > 0 ? 1 : -1;
+            int targetCoord = lastCoord + steps * direction;
+
+            for (int i = 1; i <= steps; i++)
             {
-                return true;
+                int stepCoord = lastCoord + i * direction;
+                int stepCell = isXAxis ? Grid.XYToCell(stepCoord, fixedCoord) : Grid.XYToCell(fixedCoord, stepCoord);
+                if (Grid.IsValidCell(stepCell) && Grid.IsVisible(stepCell))
+                {
+                    Traverse.Create(instance).Method("OnDragTool", stepCell, 0).GetValue();
+                }
             }
 
-            if (!LineBuildState.isDragging || LineBuildState.dragStartCell == -1)
-            {
-                return true;
-            }
+            return isXAxis ? Grid.XYToCell(targetCoord, fixedCoord) : Grid.XYToCell(fixedCoord, targetCoord);
+        }
 
+        static bool Prefix(DragTool __instance, Vector3 cursorPos)
+        {
+            // 只对BuildTool且正在直线拖拽时生效
+            if (!(__instance is BuildTool) || !LineBuildState.isDragging)
+                return true; // 返回true让原方法继续执行
+
+            // 获取当前单元格
             int currentCell = Grid.PosToCell(cursorPos);
-            int startCell = LineBuildState.dragStartCell;
 
-            // 如果还在同一个单元格内，不处理
-            if (currentCell == startCell)
+            // 如果还在同一个单元格内，不进行建造
+            if (currentCell == LineBuildState.lastCell) return false;
+
+            // 将单元格坐标转换为XY坐标进行计算
+            Grid.CellToXY(LineBuildState.dragStartCell, out int startX, out int startY);
+            Grid.CellToXY(currentCell, out int currentX, out int currentY);
+
+            // 确定主拖拽轴向（只在轴向未确定时执行）
+            if (LineBuildState.dragAxis == 0)
             {
-                return false;
-            }
+                // 计算从起始点到当前点的偏移量
+                int deltaX = currentX - startX;
+                int deltaY = currentY - startY;
 
-            int startX, startY, currentX, currentY;
-            Grid.CellToXY(startCell, out startX, out startY);
-            Grid.CellToXY(currentCell, out currentX, out currentY);
-
-            int deltaX = currentX - startX;
-            int deltaY = currentY - startY;
-
-            // 计算当前移动方向
-            int currentDirectionX = 0;
-            int currentDirectionY = 0;
-
-            if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
-            {
-                currentDirectionX = (deltaX > 0) ? 1 : -1;
-                currentDirectionY = 0;
-            }
-            else if (Mathf.Abs(deltaY) > Mathf.Abs(deltaX))
-            {
-                currentDirectionX = 0;
-                currentDirectionY = (deltaY > 0) ? 1 : -1;
-            }
-            else if (Mathf.Abs(deltaX) > 0 || Mathf.Abs(deltaY) > 0)
-            {
+                // 比较X和Y方向的移动距离，确定主要轴向
                 if (Mathf.Abs(deltaX) >= Mathf.Abs(deltaY))
                 {
-                    currentDirectionX = (deltaX > 0) ? 1 : -1;
-                    currentDirectionY = 0;
+                    LineBuildState.dragAxis = 1; // X轴
                 }
                 else
                 {
-                    currentDirectionX = 0;
-                    currentDirectionY = (deltaY > 0) ? 1 : -1;
+                    LineBuildState.dragAxis = 2; // Y轴
                 }
             }
 
-            // 如果方向还没锁定，确定主要拖动方向
-            if (!LineBuildState.directionLocked)
+            // 获取上次单元格的坐标
+            Grid.CellToXY(LineBuildState.lastCell, out int lastX, out int lastY);
+
+            // 根据轴向补齐中间缺失的建筑，并计算目标单元格
+            int targetCell;
+            if (LineBuildState.dragAxis == 1)
             {
-                if (currentDirectionX != 0)
-                {
-                    LineBuildState.dragDirectionX = currentDirectionX;
-                    LineBuildState.dragDirectionY = 0;
-                    LineBuildState.directionLocked = true;
-                }
-                else if (currentDirectionY != 0)
-                {
-                    LineBuildState.dragDirectionX = 0;
-                    LineBuildState.dragDirectionY = currentDirectionY;
-                    LineBuildState.directionLocked = true;
-                }
+                // 沿着X轴建造
+                targetCell = BuildAlongAxis(__instance, lastX, currentX, lastY, true);
+            }
+            else
+            {
+                // 沿着Y轴建造
+                targetCell = BuildAlongAxis(__instance, lastY, currentY, lastX, false);
             }
 
-            // 根据锁定方向计算目标距离
-            int targetDistance = 0;
-            if (LineBuildState.dragDirectionX != 0)
-            {
-                targetDistance = deltaX * LineBuildState.dragDirectionX;
-            }
-            else if (LineBuildState.dragDirectionY != 0)
-            {
-                targetDistance = deltaY * LineBuildState.dragDirectionY;
-            }
+            // 更新上次单元格为目标单元格
+            LineBuildState.lastCell = targetCell;
 
-            // 如果距离没变，说明在次轴方向移动，不需要建造
-            if (targetDistance == LineBuildState.lastBuiltDistance)
-            {
-                return false;
-            }
-
-            // 建造从起始点到目标距离的所有位置
-            int maxDist = Mathf.Abs(targetDistance);
-            for (int dist = 1; dist <= maxDist; dist++)
-            {
-                int actualDist = dist * ((targetDistance >= 0) ? 1 : -1);
-                int targetX = startX + LineBuildState.dragDirectionX * actualDist;
-                int targetY = startY + LineBuildState.dragDirectionY * actualDist;
-                int targetCell = Grid.XYToCell(targetX, targetY);
-
-                if (Grid.IsValidCell(targetCell) && Grid.IsVisible(targetCell) && !LineBuildState.builtCells.Contains(targetCell))
-                {
-                    Traverse.Create(__instance).Method("OnDragTool", targetCell, Mathf.Abs(actualDist)).GetValue();
-                    LineBuildState.builtCells.Add(targetCell);
-                }
-            }
-
-            LineBuildState.lastBuiltDistance = targetDistance;
-            return false;
+            return false; // 返回false阻止原AddDragPoints方法执行
         }
     }
 
+    /// 修补DragTool的OnLeftClickUp方法
+    /// 在鼠标左键释放时清理直线建造状态
     [HarmonyPatch(typeof(DragTool), "OnLeftClickUp")]
     public class DragTool_OnLeftClickUp_Patch
     {
+        /// Postfix方法：在原方法执行后执行
+        /// 清理所有直线建造相关的状态变量，为下次拖拽做准备
+        /// <param name="__instance">DragTool实例</param>
         static void Postfix(DragTool __instance)
         {
+            // 只对BuildTool进行清理
             if (__instance is BuildTool)
             {
-                LineBuildState.dragStartCell = -1;
-                LineBuildState.dragDirectionX = 0;
-                LineBuildState.dragDirectionY = 0;
-                LineBuildState.isDragging = false;
-                LineBuildState.lastBuiltDistance = -1;
-                LineBuildState.builtCells.Clear();
-                LineBuildState.directionLocked = false;
+                // 重置所有状态变量到初始状态
+                LineBuildState.dragStartCell = -1;         // 重置起始单元格
+                LineBuildState.lastCell = -1;             // 重置上次单元格
+                LineBuildState.dragAxis = 0;               // 重置轴向
+                LineBuildState.isDragging = false;         // 标记停止拖拽
             }
         }
     }
