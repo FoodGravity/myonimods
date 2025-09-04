@@ -14,7 +14,7 @@ mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\装杯\mod.ya
 mklink /D "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\装杯\anim" "D:\onimod\myonimods\装杯\anim"
 
 
-mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\用嘴搬运气"
-mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\用嘴搬运气\用嘴搬运气.dll" "D:\onimod\myonimods\用嘴搬运气\bin\Debug\用嘴搬运气.dll"
-mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\用嘴搬运气\mod_info.yaml" "D:\onimod\myonimods\用嘴搬运气\mod_info.yaml"
-mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\用嘴搬运气\mod.yaml" "D:\onimod\myonimods\用嘴搬运气\mod.yaml"
+mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\擦气.dll" "D:\onimod\myonimods\擦气\bin\Debug\擦气.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\mod_info.yaml" "D:\onimod\myonimods\擦气\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\mod.yaml" "D:\onimod\myonimods\擦气\mod.yaml"

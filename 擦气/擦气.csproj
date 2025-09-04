@@ -7,8 +7,8 @@
     <ProjectGuid>{DFBAEFF4-64E4-4721-9C4F-A9559198D435}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>用嘴搬运气</RootNamespace>
-    <AssemblyName>用嘴搬运气</AssemblyName>
+    <RootNamespace>擦气</RootNamespace>
+    <AssemblyName>擦气</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -60,7 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MouthGasCarrierPatches.cs" />
+    <Compile Include="MopGasPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

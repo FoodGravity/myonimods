@@ -41,14 +41,14 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "用嘴搬运气",
+            "label": "擦气",
             "command": "F:\\Clink\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
             "type": "shell",
             "args": [
                 "/p:Configuration=Debug",
                 "/p:Platform=AnyCPU", 
                 "/t:Build",
-                "${workspaceFolder}/用嘴搬运气/用嘴搬运气.csproj"
+                "${workspaceFolder}/擦气/擦气.csproj"
             ],
             "group": "build",
         }

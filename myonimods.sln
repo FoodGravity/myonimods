@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "手压气泵", "手压气�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "直线建造", "直线建造\直线建造.csproj", "{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "用嘴搬运气", "用嘴搬运气\用嘴搬运气.csproj", "{DFBAEFF4-64E4-4721-9C4F-A9559198D435}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "擦气", "擦气\擦气.csproj", "{DFBAEFF4-64E4-4721-9C4F-A9559198D435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

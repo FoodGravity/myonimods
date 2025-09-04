@@ -4,16 +4,16 @@ using STRINGS;
 using System.Collections.Generic;
 using KMod;
 
-namespace 用嘴搬运气
+namespace 擦气
 {
-    public class MouthGasCarrierMod : UserMod2
+    public class MopGas : UserMod2
     {
         public override void OnLoad(Harmony harmony)
         {
             base.OnLoad(harmony);
             // 添加本地化字符串
-            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.吸气.NAME", "吸气");
-            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.吸气.TOOLTIP", "启用气体收集模式，允许使用拖把工具收集气体");
+            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦气.NAME", "擦气");
+            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦气.TOOLTIP", "启用气体收集模式，允许使用拖把工具收集气体");
             Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦水.NAME", "擦水");
             Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦水.TOOLTIP", "启用液体收集模式，允许使用拖把工具收集液体");
         }
@@ -25,7 +25,7 @@ namespace 用嘴搬运气
         private static Dictionary<string, ToolParameterMenu.ToggleState> mopToolOptions = new Dictionary<string, ToolParameterMenu.ToggleState>
         {
             { "擦水", ToolParameterMenu.ToggleState.On },
-            { "吸气", ToolParameterMenu.ToggleState.Off }
+            { "擦气", ToolParameterMenu.ToggleState.Off }
         };
 
         // 修改MopTool的OnDragTool方法来支持气体收集
@@ -40,8 +40,8 @@ namespace 用嘴搬运气
                 }
 
                 // 检查是否启用了气体收集模式
-                bool collectGas = mopToolOptions.ContainsKey("吸气") &&
-                                 mopToolOptions["吸气"] == ToolParameterMenu.ToggleState.On;
+                bool collectGas = mopToolOptions.ContainsKey("擦气") &&
+                                 mopToolOptions["擦气"] == ToolParameterMenu.ToggleState.On;
 
                 bool collectLiquid = mopToolOptions.ContainsKey("擦水") &&
                                     mopToolOptions["擦水"] == ToolParameterMenu.ToggleState.On;
@@ -292,17 +292,17 @@ namespace 用嘴搬运气
         //     }
         // }
 
-        // // 修改 Moppable.OnSpawn 来支持吸气时的呼吸动画
+        // // 修改 Moppable.OnSpawn 来支持擦气时的呼吸动画
         // [HarmonyPatch(typeof(Moppable), "OnSpawn")]
         // public class Moppable_OnSpawn_Patch
         // {
         //     public static void Postfix(Moppable __instance)
         //     {
         //         // 检查当前的拖把工具模式
-        //         if (MopTool.Instance != null && mopToolOptions.ContainsKey("吸气") &&
-        //             mopToolOptions["吸气"] == ToolParameterMenu.ToggleState.On)
+        //         if (MopTool.Instance != null && mopToolOptions.ContainsKey("擦气") &&
+        //             mopToolOptions["擦气"] == ToolParameterMenu.ToggleState.On)
         //         {
-        //             // 如果启用了吸气模式，使用呼吸动画
+        //             // 如果启用了擦气模式，使用呼吸动画
         //             __instance.overrideAnims = new KAnimFile[1] { Assets.GetAnim("anim_idle_breathdeep_kanim") };
         //         }
         //         else
