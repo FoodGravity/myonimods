@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "手压气泵", "手压气�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "直线建造", "直线建造\直线建造.csproj", "{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "用嘴搬运气", "用嘴搬运气\用嘴搬运气.csproj", "{DFBAEFF4-64E4-4721-9C4F-A9559198D435}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FBC6BA6-596F-4CE1-8BD9-2E9F454F1EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFBAEFF4-64E4-4721-9C4F-A9559198D435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBAEFF4-64E4-4721-9C4F-A9559198D435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFBAEFF4-64E4-4721-9C4F-A9559198D435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBAEFF4-64E4-4721-9C4F-A9559198D435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

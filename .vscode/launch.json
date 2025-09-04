@@ -32,6 +32,16 @@
             "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
             "stopAtEntry": false
         },
+        {
+            "name": "用嘴搬运气",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "用嘴搬运气",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "stopAtEntry": false
+        },
     ],
 
     
