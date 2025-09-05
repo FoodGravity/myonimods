@@ -27,6 +27,33 @@ namespace 擦气
             { "擦水", ToolParameterMenu.ToggleState.Off },
             { "擦气", ToolParameterMenu.ToggleState.On }
         };
+        // 修改MopTool的OnActivateTool方法来显示选项菜单
+        [HarmonyPatch(typeof(MopTool), "OnActivateTool")]
+        public class MopTool_OnActivateTool_Patch
+        {
+            public static void Postfix(MopTool __instance)
+            {
+                ToolMenu.Instance.PriorityScreen.Show();
+                if (ToolMenu.Instance.toolParameterMenu != null)
+                {
+                    ToolMenu.Instance.toolParameterMenu.PopulateMenu(mopToolOptions);
+                }
+            }
+        }
+
+        // 修改MopTool的OnDeactivateTool方法来清理选项菜单
+        [HarmonyPatch(typeof(MopTool), "OnDeactivateTool")]
+        public class MopTool_OnDeactivateTool_Patch
+        {
+            public static void Postfix()
+            {
+                ToolMenu.Instance.PriorityScreen.Show(show: false);
+                if (ToolMenu.Instance.toolParameterMenu != null)
+                {
+                    ToolMenu.Instance.toolParameterMenu.ClearMenu();
+                }
+            }
+        }
 
         // 修改MopTool的OnDragTool方法来支持气体收集
         [HarmonyPatch(typeof(MopTool), "OnDragTool")]
@@ -118,33 +145,6 @@ namespace 擦气
             }
         }
 
-        // 修改MopTool的OnActivateTool方法来显示选项菜单
-        [HarmonyPatch(typeof(MopTool), "OnActivateTool")]
-        public class MopTool_OnActivateTool_Patch
-        {
-            public static void Postfix(MopTool __instance)
-            {
-                ToolMenu.Instance.PriorityScreen.Show();
-                if (ToolMenu.Instance.toolParameterMenu != null)
-                {
-                    ToolMenu.Instance.toolParameterMenu.PopulateMenu(mopToolOptions);
-                }
-            }
-        }
-
-        // 修改MopTool的OnDeactivateTool方法来清理选项菜单
-        [HarmonyPatch(typeof(MopTool), "OnDeactivateTool")]
-        public class MopTool_OnDeactivateTool_Patch
-        {
-            public static void Postfix()
-            {
-                ToolMenu.Instance.PriorityScreen.Show(show: false);
-                if (ToolMenu.Instance.toolParameterMenu != null)
-                {
-                    ToolMenu.Instance.toolParameterMenu.ClearMenu();
-                }
-            }
-        }
 
         // 修改 Moppable.MopCell 支持气体
         [HarmonyPatch(typeof(Moppable), "MopCell")]
