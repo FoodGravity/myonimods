@@ -292,7 +292,7 @@ namespace 擦气
             }
         }
 
-        // 修改 Moppable.OnSpawn 来支持擦气时的呼吸动画
+        // 修改 Moppable.OnSpawn 来支持擦气时的呼吸动画和序列映射
         [HarmonyPatch(typeof(Moppable), "OnSpawn")]
         public class Moppable_OnSpawn_Patch
         {
@@ -304,6 +304,11 @@ namespace 擦气
                 {
                     // 如果启用了擦气模式，使用呼吸动画
                     __instance.overrideAnims = new KAnimFile[1] { Assets.GetAnim("anim_idle_breatherdeep_kanim") };
+
+                    // 直接修改工作动画序列，使用呼吸动画的序列名称
+                    __instance.workAnims = new HashedString[] { "idle_pre", "idle_default" };
+                    __instance.workingPstComplete = new HashedString[] { "idle_pst" };
+                    __instance.workingPstFailed = new HashedString[] { "idle_pst" };
                 }
             }
         }
