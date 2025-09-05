@@ -24,8 +24,8 @@ namespace 擦气
         // 存储MopTool的选项状态
         private static Dictionary<string, ToolParameterMenu.ToggleState> mopToolOptions = new Dictionary<string, ToolParameterMenu.ToggleState>
         {
-            { "擦水", ToolParameterMenu.ToggleState.On },
-            { "擦气", ToolParameterMenu.ToggleState.Off }
+            { "擦水", ToolParameterMenu.ToggleState.Off },
+            { "擦气", ToolParameterMenu.ToggleState.On }
         };
 
         // 修改MopTool的OnDragTool方法来支持气体收集
@@ -219,98 +219,93 @@ namespace 擦气
                 return false; // 阻止原方法执行
             }
         }
-        // // 修改 Moppable.OnReachableChanged 方法来使用更大的可达性检查范围
-        // [HarmonyPatch(typeof(Moppable), "OnReachableChanged")]
-        // public class Moppable_OnReachableChanged_Patch
-        // {
-        //     public static bool Prefix(Moppable __instance, object data, ref MeshRenderer ___childRenderer)
-        //     {
-        //         if (!(___childRenderer != null))
-        //         {
-        //             return false;
-        //         }
+        // 修改 Moppable.OnReachableChanged 方法来使用更大的可达性检查范围
+        [HarmonyPatch(typeof(Moppable), "OnReachableChanged")]
+        public class Moppable_OnReachableChanged_Patch
+        {
+            public static bool Prefix(Moppable __instance, object data, ref MeshRenderer ___childRenderer)
+            {
+                if (!(___childRenderer != null))
+                {
+                    return false;
+                }
 
-        //         Material material = ___childRenderer.material;
-        //         bool flag = (bool)data;
-        //         if (material.color == Game.Instance.uiColours.Dig.invalidLocation)
-        //         {
-        //             return false;
-        //         }
+                Material material = ___childRenderer.material;
+                bool flag = (bool)data;
+                if (material.color == Game.Instance.uiColours.Dig.invalidLocation)
+                {
+                    return false;
+                }
 
-        //         KSelectable component = __instance.GetComponent<KSelectable>();
-        //         if (flag)
-        //         {
-        //             material.color = Game.Instance.uiColours.Dig.validLocation;
-        //             component.RemoveStatusItem(Db.Get().BuildingStatusItems.MopUnreachable);
-        //             return false;
-        //         }
+                KSelectable component = __instance.GetComponent<KSelectable>();
+                if (flag)
+                {
+                    material.color = Game.Instance.uiColours.Dig.validLocation;
+                    component.RemoveStatusItem(Db.Get().BuildingStatusItems.MopUnreachable);
+                    return false;
+                }
 
-        //         // 使用扩展的可达性检查范围，参考移动杂物工具的逻辑
-        //         int cell = Grid.PosToCell(__instance.gameObject);
-        //         bool isReachable = false;
+                // 使用扩展的可达性检查范围，参考移动杂物工具的逻辑
+                int cell = Grid.PosToCell(__instance.gameObject);
+                bool isReachable = false;
 
-        //         // 检查当前位置和周围8个方向的可达性
-        //         CellOffset[] reachabilityOffsets = new CellOffset[9]
-        //         {
-        //             new CellOffset(0, 0),    // 当前位置
-        //             new CellOffset(-1, 0),   // 左
-        //             new CellOffset(1, 0),    // 右
-        //             new CellOffset(0, -1),   // 下
-        //             new CellOffset(0, 1),    // 上
-        //             new CellOffset(-1, -1),  // 左下
-        //             new CellOffset(-1, 1),   // 左上
-        //             new CellOffset(1, -1),   // 右下
-        //             new CellOffset(1, 1)     // 右上
-        //         };
+                // 检查当前位置和周围8个方向的可达性
+                CellOffset[] reachabilityOffsets = new CellOffset[9]
+                {
+                    new CellOffset(0, 0),    // 当前位置
+                    new CellOffset(-1, 0),   // 左
+                    new CellOffset(1, 0),    // 右
+                    new CellOffset(0, -1),   // 下
+                    new CellOffset(0, 1),    // 上
+                    new CellOffset(-1, -1),  // 左下
+                    new CellOffset(-1, 1),   // 左上
+                    new CellOffset(1, -1),   // 右下
+                    new CellOffset(1, 1)     // 右上
+                };
 
-        //         for (int i = 0; i < reachabilityOffsets.Length; i++)
-        //         {
-        //             int checkCell = Grid.OffsetCell(cell, reachabilityOffsets[i]);
-        //             if (Grid.IsValidCell(checkCell) && MinionGroupProber.Get().IsReachable(checkCell))
-        //             {
-        //                 isReachable = true;
-        //                 break;
-        //             }
-        //         }
+                for (int i = 0; i < reachabilityOffsets.Length; i++)
+                {
+                    int checkCell = Grid.OffsetCell(cell, reachabilityOffsets[i]);
+                    if (Grid.IsValidCell(checkCell) && MinionGroupProber.Get().IsReachable(checkCell))
+                    {
+                        isReachable = true;
+                        break;
+                    }
+                }
 
-        //         if (isReachable)
-        //         {
-        //             material.color = Game.Instance.uiColours.Dig.validLocation;
-        //             component.RemoveStatusItem(Db.Get().BuildingStatusItems.MopUnreachable);
-        //         }
-        //         else
-        //         {
-        //             component.AddStatusItem(Db.Get().BuildingStatusItems.MopUnreachable, __instance);
-        //             GameScheduler.Instance.Schedule("Locomotion Tutorial", 2f, delegate
-        //             {
-        //                 Tutorial.Instance.TutorialMessage(Tutorial.TutorialMessages.TM_Locomotion);
-        //             });
-        //             material.color = Game.Instance.uiColours.Dig.unreachable;
-        //         }
+                if (isReachable)
+                {
+                    material.color = Game.Instance.uiColours.Dig.validLocation;
+                    component.RemoveStatusItem(Db.Get().BuildingStatusItems.MopUnreachable);
+                }
+                else
+                {
+                    component.AddStatusItem(Db.Get().BuildingStatusItems.MopUnreachable, __instance);
+                    GameScheduler.Instance.Schedule("Locomotion Tutorial", 2f, delegate
+                    {
+                        Tutorial.Instance.TutorialMessage(Tutorial.TutorialMessages.TM_Locomotion);
+                    });
+                    material.color = Game.Instance.uiColours.Dig.unreachable;
+                }
 
-        //         return false; // 阻止原方法执行
-        //     }
-        // }
+                return false; // 阻止原方法执行
+            }
+        }
 
-        // // 修改 Moppable.OnSpawn 来支持擦气时的呼吸动画
-        // [HarmonyPatch(typeof(Moppable), "OnSpawn")]
-        // public class Moppable_OnSpawn_Patch
-        // {
-        //     public static void Postfix(Moppable __instance)
-        //     {
-        //         // 检查当前的拖把工具模式
-        //         if (MopTool.Instance != null && mopToolOptions.ContainsKey("擦气") &&
-        //             mopToolOptions["擦气"] == ToolParameterMenu.ToggleState.On)
-        //         {
-        //             // 如果启用了擦气模式，使用呼吸动画
-        //             __instance.overrideAnims = new KAnimFile[1] { Assets.GetAnim("anim_idle_breathdeep_kanim") };
-        //         }
-        //         else
-        //         {
-        //             // 否则使用默认的拖把动画（包括搽水模式）
-        //             __instance.overrideAnims = new KAnimFile[1] { Assets.GetAnim("anim_mop_dirtywater_kanim") };
-        //         }
-        //     }
-        // }
+        // 修改 Moppable.OnSpawn 来支持擦气时的呼吸动画
+        [HarmonyPatch(typeof(Moppable), "OnSpawn")]
+        public class Moppable_OnSpawn_Patch
+        {
+            public static void Postfix(Moppable __instance)
+            {
+                // 检查当前的拖把工具模式
+                if (MopTool.Instance != null && mopToolOptions.ContainsKey("擦气") &&
+                    mopToolOptions["擦气"] == ToolParameterMenu.ToggleState.On)
+                {
+                    // 如果启用了擦气模式，使用呼吸动画
+                    __instance.overrideAnims = new KAnimFile[1] { Assets.GetAnim("anim_idle_breatherdeep_kanim") };
+                }
+            }
+        }
     }
 }
