@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "BuildRun装杯",
+            "name": "装杯",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "zhuangbei",
@@ -12,7 +12,7 @@
             "stopAtEntry": false
         },
         {
-            "name": "BuildRun手压",
+            "name": "手压",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "shouya",
@@ -23,7 +23,7 @@
             "stopAtEntry": false
         },
         {
-            "name": "BuildRun直线建造",
+            "name": "直线建造",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "直线建造",
