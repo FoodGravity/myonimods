@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using 装杯;
 
+public enum ElementDisplayState
+{
+    Empty,
+    Solid,
+    Gas,
+    Liquid,
+    Multiple
+}
+
 public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScreenControl, ICheckboxControl
 {
 
@@ -55,11 +64,11 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         GetComponent<Cup>().gameObject.DeleteObject();
     }
     // 材质控制
-    private MeterController meter;
+    private MeterController meter2;
 
     private void UpdateMeterColor()
     {
-        if (meter == null) return;
+        if (meter2 == null) return;
         if (storage == null) return;
 
         if (nowtags != null && nowtags.Count > 0)
@@ -67,13 +76,34 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             // 颜色混合逻辑
             Color mixedColor = Color.clear;
             int colornum = 0;
+            var noColour = new Color(0f, 0f, 0f, 0f); // 无效颜色标记
 
             foreach (var tag in nowtags)
             {
                 var element = ElementLoader.GetElement(tag);
                 if (element != null && element.substance != null)
                 {
-                    mixedColor += element.substance.colour;
+                    Color elementColor = Color.white; // 默认白色
+
+                    // 优先级1: 获取渲染颜色 (substance.colour)
+                    var substanceColour = element.substance.colour;
+                    // 如果渲染颜色有效且不透明，使用它
+                    if (!substanceColour.Equals(noColour) && substanceColour.a > 0f)
+                    {
+                        elementColor = substanceColour;
+                    }
+                    // 否则优先级2: 使用UI颜色 (substance.uiColour)
+                    else
+                    {
+                        var uiColour = element.substance.uiColour;
+                        if (!uiColour.Equals(noColour) && uiColour.a > 0f)
+                        {
+                            elementColor = uiColour;
+                        }
+                        // 优先级3: 默认为白色 (已在前面设置)
+                    }
+
+                    mixedColor += elementColor;
                     colornum++;
                 }
             }
@@ -82,20 +112,117 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
             {
                 // 平均混合颜色
                 mixedColor /= colornum;
-                meter.SetSymbolTint("meter_level", mixedColor);
+                meter2.SetSymbolTint("meter_level", mixedColor);
             }
             else
             {
-                meter.SetSymbolTint("meter_level", Color.white);
+                meter2.SetSymbolTint("meter_level", Color.white);
             }
         }
         else
         {
-            meter.SetSymbolTint("meter_level", Color.white);
+            meter2.SetSymbolTint("meter_level", Color.white);
         }
 
-        meter.SetPositionPercent(storage.MassStored() / storage.capacityKg);
+        meter2.SetPositionPercent(storage.MassStored() / storage.capacityKg);
+
+        // 更新元素状态符号显示
+        ElementDisplayState displayState = DetermineDisplayState(nowtags);
+        UpdateDisplaySymbols(displayState);
     }
+
+    private ElementDisplayState DetermineDisplayState(HashSet<Tag> tags)
+    {
+        if (tags == null || tags.Count == 0)
+        {
+            return ElementDisplayState.Empty;
+        }
+
+        bool hasSolid = false, hasGas = false, hasLiquid = false;
+
+        foreach (var tag in tags)
+        {
+            var element = ElementLoader.GetElement(tag);
+            if (element != null)
+            {
+                if (element.IsSolid) hasSolid = true;
+                else if (element.IsGas) hasGas = true;
+                else if (element.IsLiquid) hasLiquid = true;
+                // 对于无法识别（不是固体、气体、液体）的元素，按照固体处理
+                else hasSolid = true;
+            }
+            else
+            {
+                // 对于ElementLoader无法获取元素信息的物品（如蛋类、装备等），统一按固体处理
+                hasSolid = true;
+            }
+        }
+
+        // 计算类型数量
+        int typeCount = (hasSolid ? 1 : 0) + (hasGas ? 1 : 0) + (hasLiquid ? 1 : 0);
+
+        if (typeCount == 0)
+        {
+            return ElementDisplayState.Empty;
+        }
+        else if (typeCount > 1)
+        {
+            return ElementDisplayState.Multiple;
+        }
+        else if (hasSolid)
+        {
+            return ElementDisplayState.Solid;
+        }
+        else if (hasGas)
+        {
+            return ElementDisplayState.Gas;
+        }
+        else if (hasLiquid)
+        {
+            return ElementDisplayState.Liquid;
+        }
+
+        return ElementDisplayState.Empty;
+    }
+
+    private void UpdateDisplaySymbols(ElementDisplayState state)
+    {
+        if (meter2 == null || meter2.meterController == null)
+        {
+            return;
+        }
+
+        // 获取建筑物的动画控制器
+        var buildingController = GetComponent<KBatchedAnimController>();
+        if (buildingController == null)
+        {
+            return;
+        }
+
+        // 先隐藏所有符号
+        buildingController.SetSymbolVisiblity("mat_solid", false);
+        buildingController.SetSymbolVisiblity("mat_gas", false);
+        buildingController.SetSymbolVisiblity("mat_liquid", false);
+        buildingController.SetSymbolVisiblity("mat_multiple", false);
+
+        // 显示对应状态的符号
+        switch (state)
+        {
+            case ElementDisplayState.Solid:
+                buildingController.SetSymbolVisiblity("mat_solid", true);
+                break;
+            case ElementDisplayState.Gas:
+                buildingController.SetSymbolVisiblity("mat_gas", true);
+                break;
+            case ElementDisplayState.Liquid:
+                buildingController.SetSymbolVisiblity("mat_liquid", true);
+                break;
+            case ElementDisplayState.Multiple:
+                buildingController.SetSymbolVisiblity("mat_multiple", true);
+                break;
+        }
+    }
+
     [Serialize] private HashSet<Tag> nowtags;
 
 
@@ -346,13 +473,27 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         {
             filteredStorage = new FilteredStorage(this, new Tag[0], null, false, Db.Get().ChoreTypes.StorageFetch);
         }
-        //初始化才可以获取到meter、TreeFilterable
+        // 禁用FilteredStorage的meter，避免与我们自定义的meter冲突
+        filteredStorage.SetHasMeter(false);
         设置禁止标签();
 
 
-        // 初始化meter控制器
-        meter = new MeterController(GetComponent<KBatchedAnimController>(), "meter_target", "meter",
-            Meter.Offset.Infront, Grid.SceneLayer.NoLayer, "meter_frame", "meter_level");
+        // 初始化meter控制器 - 设置meter_target在最前面，meter_level在最后面
+        // 使用BuildingFront使meter_target在building前面，使用Front使meter_level在最后面
+        meter2 = new MeterController(
+            GetComponent<KBatchedAnimController>(),
+            "meter_target",
+            "meter",
+            Meter.Offset.Behind,
+            Grid.SceneLayer.NoLayer,
+            "meter_frame",
+            "meter_level"
+        );
+        // // 额外为meter_level设置更低的渲染层级，使其在最后面
+        // if (meter2 != null && meter2.meterController != null)
+        // {
+        //     meter2.meterController.sceneLayer = Grid.SceneLayer.WorldSelection; // 最后面渲染
+        // }
         // 添加对TreeFilterable变化的监听
         var treeFilterable = GetComponent<TreeFilterable>();
         if (treeFilterable != null)
@@ -364,7 +505,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
 
         UpdateStorageCapacity();
-
     }
 
     protected override void OnCleanUp()
