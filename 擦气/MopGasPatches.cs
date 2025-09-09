@@ -17,11 +17,6 @@ namespace 擦气
     public class MoppableModeComponent : MonoBehaviour
     {
         public TargetFluidType TargetType { get; set; }
-
-        private void Awake()
-        {
-            TargetType = TargetFluidType.Liquid; // 默认以液体模式运行
-        }
     }
 
     // 用于在MopCell调用期间传递当前Moppable的模式信息
@@ -48,8 +43,8 @@ namespace 擦气
         // 存储MopTool的选项状态
         private static Dictionary<string, ToolParameterMenu.ToggleState> mopToolOptions = new Dictionary<string, ToolParameterMenu.ToggleState>
         {
-            { "擦水", ToolParameterMenu.ToggleState.Off },
-            { "吸气", ToolParameterMenu.ToggleState.On }
+            { "擦水", ToolParameterMenu.ToggleState.On },
+            { "吸气", ToolParameterMenu.ToggleState.Off }
         };
 
         // 修改MopTool的OnDragTool方法来支持气体收集
@@ -296,7 +291,7 @@ namespace 擦气
 
                     if (isReachable)
                     {
-                        material.color = new Color(1f/255f, 183f/255f, 255f/255f); // 吸气模式：可达时的亮蓝1,183,255
+                        material.color = new Color(1f / 255f, 183f / 255f, 255f / 255f); // 吸气模式：可达时的亮蓝1,183,255
                         selectComponent.RemoveStatusItem(Db.Get().BuildingStatusItems.MopUnreachable);
                     }
                     else
@@ -306,7 +301,7 @@ namespace 擦气
                         {
                             Tutorial.Instance.TutorialMessage(Tutorial.TutorialMessages.TM_Locomotion);
                         });
-                        material.color = new Color(54f/255f, 111f/255f, 134f/255f); // 吸气模式：不可达时的暗蓝54, 111, 134
+                        material.color = new Color(54f / 255f, 111f / 255f, 134f / 255f); // 吸气模式：不可达时的暗蓝54, 111, 134
                     }
 
                     return false; // 阻止原方法执行，因为我们已处理完毕
