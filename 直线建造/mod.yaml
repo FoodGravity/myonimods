@@ -1,3 +1,3 @@
-﻿title: "直线建造" 
-description: "修改原本的建造工具为，计划建造砖块、梯子时候，拖动建造时限制为直线"
+﻿title: "直线建造(StraightBuild)" 
+description: "修改原本的建造工具为，计划建造砖块、梯子时候，拖动建造时限制为直线(Modify the original build tool to limit the construction to a straight line when building bricks or ladders)"
 staticID: "直线建造" 

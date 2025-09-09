@@ -31,9 +31,9 @@ namespace 擦气
         {
             base.OnLoad(harmony);
             // 添加本地化字符串
-            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.吸气.NAME", "吸气");
+            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.吸气.NAME", "吸气(Gas)");
             Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.吸气.TOOLTIP", "启用气体收集模式，允许使用拖把工具收集气体");
-            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦水.NAME", "擦水");
+            Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦水.NAME", "擦水(Liquid)");
             Strings.Add("STRINGS.UI.TOOLS.FILTERLAYERS.擦水.TOOLTIP", "启用液体收集模式，允许使用拖把工具收集液体");
         }
     }
