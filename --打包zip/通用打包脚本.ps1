@@ -48,14 +48,16 @@ New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 # 复制文件到临时目录
 foreach ($file in $filesToPack) {
-    if (Test-Path $file) {
-        if ((Get-Item $file) -is [System.IO.DirectoryInfo]) {
-            Copy-Item -Path $file -Destination $tempDir -Recurse
+    if ($file) {
+        if (Test-Path $file) {
+            if ((Get-Item $file) -is [System.IO.DirectoryInfo]) {
+                Copy-Item -Path $file -Destination $tempDir -Recurse
+            } else {
+                Copy-Item -Path $file -Destination $tempDir
+            }
         } else {
-            Copy-Item -Path $file -Destination $tempDir
+            Write-Warning "文件或目录不存在: $file"
         }
-    } else {
-        Write-Warning "文件或目录不存在: $file"
     }
 }
 
