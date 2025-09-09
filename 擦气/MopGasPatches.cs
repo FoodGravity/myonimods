@@ -40,6 +40,20 @@ namespace 擦气
 
     public class MouthCarrierPatches
     {
+        // 定义四周9格的偏移量（左中右、四角和边）
+        private static readonly CellOffset[] nineOffsets = new CellOffset[]
+        {
+            new CellOffset(0, 0),   // 中心
+            new CellOffset(-1, 0),  // 左
+            new CellOffset(1, 0),   // 右
+            new CellOffset(0, -1),  // 下
+            new CellOffset(0, 1),   // 上
+            new CellOffset(-1, -1), // 左下
+            new CellOffset(-1, 1),  // 左上
+            new CellOffset(1, -1),  // 右下
+            new CellOffset(1, 1)    // 右上
+        };
+
         // 存储MopTool的选项状态
         private static Dictionary<string, ToolParameterMenu.ToggleState> mopToolOptions = new Dictionary<string, ToolParameterMenu.ToggleState>
         {
@@ -165,7 +179,8 @@ namespace 擦气
                     var offsetsField = typeof(Moppable).GetField("offsets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     var amountMoppedField = typeof(Moppable).GetField("amountMopped", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-                    CellOffset[] offsets = (CellOffset[])offsetsField.GetValue(__instance);
+                    // 气体模式使用四周9格偏移，液体模式使用原版偏移
+                    CellOffset[] offsets = nineOffsets;
                     float currentAmountMopped = (float)amountMoppedField.GetValue(__instance);
 
                     int cell = Grid.PosToCell(__instance.gameObject);
@@ -236,9 +251,8 @@ namespace 擦气
                     int cell = Grid.PosToCell(__instance.gameObject);
                     bool flag = false;
 
-                    // 使用反射获取offsets数组
-                    var offsets = __instance.GetType().GetField("offsets", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                        .GetValue(__instance) as CellOffset[];
+                    // 气体模式使用四周9格偏移
+                    CellOffset[] offsets = nineOffsets;
 
                     for (int index = 0; index < offsets.Length; ++index)
                     {
