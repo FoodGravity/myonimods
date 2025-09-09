@@ -54,10 +54,30 @@ public class CupConfig : IBuildingConfig
         Prioritizable.AddRef(go);
         Storage storage = go.AddOrGet<Storage>();
         storage.showInUI = true;
-        storage.allowItemRemoval = false;
+        //storage.allowItemRemoval = false;
         storage.showDescriptor = true;
+
+
+
         // storage.storageFilters = STORAGEFILTERS.LIQUIDS.Concat(STORAGEFILTERS.GASES).ToList();
-        storage.storageFilters = STORAGEFILTERS.NOT_EDIBLE_SOLIDS.Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.FOOD).Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.LIQUIDS).Concat<Tag>((IEnumerable<Tag>)STORAGEFILTERS.GASES).ToList<Tag>();
+        // storage.storageFilters = STORAGEFILTERS.NOT_EDIBLE_SOLIDS
+        // .Concat(STORAGEFILTERS.FOOD)
+        // .Concat(STORAGEFILTERS.LIQUIDS)
+        // .Concat(STORAGEFILTERS.GASES)
+        // .ToList();
+
+
+        // 设置杯子的存储过滤器，包含游戏中几乎所有类型的物品
+        storage.storageFilters = STORAGEFILTERS.NOT_EDIBLE_SOLIDS  // 不可食用固体（如金属、矿石、工业产品等）
+            .Concat(STORAGEFILTERS.FOOD)                           // 食物和烹饪原料          
+            .Concat(STORAGEFILTERS.BAGABLE_CREATURES)              // 可装袋生物
+            .Concat(STORAGEFILTERS.SWIMMING_CREATURES)             // 游泳生物
+            .Concat(STORAGEFILTERS.LIQUIDS)                        // 液体
+            .Concat(STORAGEFILTERS.GASES)                          // 气体
+            .Union(new List<Tag> { GameTags.CropSeed })            //作物种子
+            // .Concat(STORAGEFILTERS.PAYLOADS)                       // 轨道炮payload（字符串标签）
+            // .Concat(new List<Tag> { GameTags.RailGunPayloadEmptyable }) // Interplanetary Payload的实际标签
+            .ToList();
         storage.storageFullMargin = 0.0f;
         storage.fetchCategory = Storage.FetchCategory.GeneralStorage;
         storage.showCapacityStatusItem = true;
@@ -68,8 +88,8 @@ public class CupConfig : IBuildingConfig
         go.AddOrGetDef<RocketUsageRestriction.Def>().restrictOperational = false;
 
         // 移除不需要的组件
-        Object.Destroy((Object)go.AddOrGet<Reconstructable>());
-        Object.Destroy((Object)go.AddOrGet<Deconstructable>());
+        Object.Destroy(go.AddOrGet<Reconstructable>());
+        Object.Destroy(go.AddOrGet<Deconstructable>());
         // 修改侧边栏添加方式
     }
 

@@ -348,6 +348,24 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
         自动操作();
     }
     [Serialize]
+    private bool allowItemRemovalValue = false;
+
+    public bool 允许提取物品
+    {
+        get { return allowItemRemovalValue; }
+        set
+        {
+            if (value == allowItemRemovalValue) return;
+            allowItemRemovalValue = value;
+            if (storage != null)
+            {
+                storage.allowItemRemoval = value;
+                storage.RenotifyAll();
+            }
+        }
+    }
+
+    [Serialize]
     public int SelectedOption { get; set; } = 2;
 
     public int QueuedOption => SelectedOption;
@@ -374,9 +392,6 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
 
     //ui管理
-
-
-
     public void 检查ui()
     {
         // 如果组件已经找到，直接返回
@@ -505,7 +520,16 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
 
         UpdateStorageCapacity();
+
+
+        if (storage != null && storage.allowItemRemoval != 允许提取物品)
+        {
+            storage.allowItemRemoval = 允许提取物品;
+            storage.RenotifyAll();
+        }
     }
+
+
 
     protected override void OnCleanUp()
     {

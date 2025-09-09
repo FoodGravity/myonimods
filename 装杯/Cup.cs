@@ -17,6 +17,7 @@ public class Cup : KMonoBehaviour
 
     [MyCmpGet]
     public CupOptions options;
+
     // public static CupOptions nowCup;
     protected override void OnPrefabInit()
     {
@@ -86,14 +87,13 @@ public class Cup : KMonoBehaviour
 
             Game.Instance.userMenu.AddButton(gameObject, new KIconButtonMenu.ButtonInfo(
                  "action_empty_contents",
-                  options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
+                  options.允许提取物品 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
                     CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品,
                  () =>
                  {
-                     options.storage.allowItemRemoval = !options.storage.allowItemRemoval;
-                     options.storage.RenotifyAll();
+                     options.允许提取物品 = !options.允许提取物品;
                  },
-                 tooltipText: options.storage.allowItemRemoval ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
+                 tooltipText: options.允许提取物品 ? CupStrings.BUILDINGS.PREFABS.CUP.UI.禁止提取物品 :
                  CupStrings.BUILDINGS.PREFABS.CUP.UI.允许提取物品), 0.0f);
 
             options.检查ui();
@@ -130,6 +130,7 @@ public class Cup : KMonoBehaviour
                 options.SelectedOption = sourceCup.options.SelectedOption;
                 options.需装满 = sourceCup.options.需装满;
                 options.允许桶罐装 = sourceCup.options.允许桶罐装;
+                options.允许提取物品 = sourceCup.options.允许提取物品;
             }
         }
     }
