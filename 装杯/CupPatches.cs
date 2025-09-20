@@ -88,7 +88,10 @@ public static class BuildingDef_Instantiate_Patch
     {
         // 等待一帧复制设置
         yield return 0f;
-        cup.Trigger((int)GameHashes.CopySettings, sourceBuilding.gameObject);
+        if (sourceBuilding != null)
+        {
+            cup.Trigger((int)GameHashes.CopySettings, sourceBuilding.gameObject);
+        }
 
     }
 }
