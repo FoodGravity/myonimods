@@ -2,6 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 using System.Collections.Generic;
+using Rendering.World;
 
 namespace 直线建造
 {
@@ -18,6 +19,17 @@ namespace 直线建造
         /// 是否正在进行直线拖拽建造
         public static bool isDragging = false;
 
+        /// <summary>
+        /// 检查当前建筑是否支持直线建造（砖块或梯子）
+        /// </summary>
+        public static bool IsSupportedBuilding(BuildingDef def)
+        {
+            if (def == null) return false;
+            return def.PrefabID.Contains("Tile") ||
+                   def.PrefabID.Contains("Ladder") ||
+                   def.PrefabID.Contains("Pole");
+
+        }
     }
 
     /// 修补DragTool的OnLeftClickDown方法
@@ -28,8 +40,8 @@ namespace 直线建造
 
         static void Postfix(DragTool __instance, Vector3 cursor_pos)
         {
-            // 只对BuildTool生效，其他工具（如挖掘工具）不处理
-            if (__instance is BuildTool)
+            // 只对BuildTool且是支持的建筑类型生效
+            if (__instance is BuildTool tool && LineBuildState.IsSupportedBuilding(Traverse.Create(tool).Field<BuildingDef>("def").Value))
             {
                 // 将鼠标位置转换为网格单元格索引
                 int cell = Grid.PosToCell(cursor_pos);
@@ -78,9 +90,11 @@ namespace 直线建造
 
         static bool Prefix(DragTool __instance, Vector3 cursorPos)
         {
-            // 只对BuildTool且正在直线拖拽时生效
-            if (!(__instance is BuildTool) || !LineBuildState.isDragging)
-                return true; // 返回true让原方法继续执行
+            // 只对BuildTool且正在直线拖拽且是支持的建筑类型时生效
+            if (!(__instance is BuildTool tool) ||
+                !LineBuildState.isDragging ||
+                !LineBuildState.IsSupportedBuilding(Traverse.Create(tool).Field<BuildingDef>("def").Value))
+                return true;
 
             // 获取当前单元格
             int currentCell = Grid.PosToCell(cursorPos);
