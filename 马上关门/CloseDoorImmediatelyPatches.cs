@@ -41,37 +41,35 @@ namespace 马上关门
             }
         }
 
-        // [HarmonyPatch(typeof(BuildingEnabledButton), "OnMenuToggle")]
-        // public class BuildingEnabledButton_OnMenuToggle_Patch
-        // {
-        //     private static bool Prefix(BuildingEnabledButton __instance)
-        //     {
-        //         // 保存当前优先级
-        //         var building = __instance.GetComponent<Building>();
-        //         var operational = building?.GetComponent<Operational>();
-        //         var savedPriority = operational?.GetComponent<Prioritizable>()?.GetMasterPriority().priority_value;
+        [HarmonyPatch(typeof(BuildingEnabledButton), "OnMenuToggle")]
+        public class BuildingEnabledButton_OnMenuToggle_Patch
+        {
+            private static bool Prefix(BuildingEnabledButton __instance)
+            {
+                // 保存当前优先级
+                var building = __instance.GetComponent<Building>();
+                var operational = building?.GetComponent<Operational>();
+                var prioritizable = operational?.GetComponent<Prioritizable>();
+                var savedPriority = prioritizable?.GetMasterPriority().priority_value;
                 
-        //         // 执行原始切换逻辑
-        //         __instance.HandleToggle();
+                // 使用Traverse访问私有成员
+                var traverse = Traverse.Create(__instance);
+                traverse.Field("queuedToggle").SetValue(false);
+                traverse.Method("OnToggle").GetValue();
                 
-        //         // 强制刷新UI状态
-        //         var kSelectable = __instance.GetComponent<KSelectable>();
-        //         if (kSelectable != null)
-        //         {
-        //             kSelectable.IsSelected = !kSelectable.IsSelected;
-        //             kSelectable.IsSelected = !kSelectable.IsSelected;
-        //         }
+                // 恢复优先级
+                if (savedPriority.HasValue && prioritizable != null)
+                {
+                    prioritizable.SetMasterPriority(new PrioritySetting(
+                        PriorityScreen.PriorityClass.basic, 
+                        savedPriority.Value));
+                }
                 
-        //         // 恢复优先级
-        //         if (savedPriority.HasValue && operational != null)
-        //         {
-        //             operational.GetComponent<Prioritizable>()?.SetMasterPriority(new PrioritySetting(
-        //                 PriorityScreen.PriorityClass.basic, 
-        //                 savedPriority.Value));
-        //         }
+                // 刷新用户菜单
+                Game.Instance.userMenu.Refresh(__instance.gameObject);
                 
-        //         return false;
-        //     }
-        // }
+                return false;
+            }
+        }
     }
 }
