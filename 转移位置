@@ -18,3 +18,8 @@ mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气"
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\擦气.dll" "D:\onimod\myonimods\擦气\bin\Debug\擦气.dll"
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\mod_info.yaml" "D:\onimod\myonimods\擦气\mod_info.yaml"
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\擦气\mod.yaml" "D:\onimod\myonimods\擦气\mod.yaml"
+
+mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\干板墙复制皮肤设置.dll" "D:\onimod\myonimods\干板墙复制皮肤设置\bin\Debug\干板墙复制皮肤设置.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\mod_info.yaml" "D:\onimod\myonimods\干板墙复制皮肤设置\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\mod.yaml" "D:\onimod\myonimods\干板墙复制皮肤设置\mod.yaml"

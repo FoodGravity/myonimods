@@ -51,6 +51,20 @@
                 "${workspaceFolder}/擦气/擦气.csproj"
             ],
             "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "干板墙复制皮肤设置",
+            "command": "F:\\Clink\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "type": "shell",
+            "args": [
+                "/p:Configuration=Debug",
+                "/p:Platform=AnyCPU", 
+                "/t:Build",
+                "${workspaceFolder}/干板墙复制皮肤设置/干板墙复制皮肤设置.csproj"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile"
         }
 
 

@@ -42,6 +42,18 @@
             "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
             "stopAtEntry": false
         },
+        {
+            "name": "干板墙复制皮肤设置",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "干板墙复制皮肤设置",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "stopAtEntry": false
+        }
+            
+
     ],
 
     

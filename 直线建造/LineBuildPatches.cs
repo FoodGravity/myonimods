@@ -74,17 +74,19 @@ namespace 直线建造
             int steps = Mathf.Abs(delta);
             int direction = delta > 0 ? 1 : -1;
             int targetCoord = lastCoord + steps * direction;
-
+        
             for (int i = 1; i <= steps; i++)
             {
                 int stepCoord = lastCoord + i * direction;
                 int stepCell = isXAxis ? Grid.XYToCell(stepCoord, fixedCoord) : Grid.XYToCell(fixedCoord, stepCoord);
-                if (Grid.IsValidCell(stepCell) && Grid.IsVisible(stepCell))
+                
+                // 添加更严格的单元格验证
+                if (Grid.IsValidCell(stepCell) && Grid.IsVisible(stepCell) && Grid.IsActiveWorld(stepCell))
                 {
                     Traverse.Create(instance).Method("OnDragTool", stepCell, 0).GetValue();
                 }
             }
-
+        
             return isXAxis ? Grid.XYToCell(targetCoord, fixedCoord) : Grid.XYToCell(fixedCoord, targetCoord);
         }
 
