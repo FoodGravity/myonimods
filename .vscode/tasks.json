@@ -65,7 +65,33 @@
             ],
             "group": "build",
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "墙式马桶优先级",
+            "command": "F:\\Clink\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "type": "shell",
+            "args": [
+                "/p:Configuration=Debug",
+                "/p:Platform=AnyCPU", 
+                "/t:Build",
+                "${workspaceFolder}/墙式马桶优先级/墙式马桶优先级.csproj"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "马上关门",
+            "command": "F:\\Clink\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe",
+            "type": "shell",
+            "args": [
+                "/p:Configuration=Debug",
+                "/p:Platform=AnyCPU", 
+                "/t:Build",
+                "${workspaceFolder}/马上关门/马上关门.csproj"
+            ],
+            "group": "build",
         }
+    
 
 
     ]

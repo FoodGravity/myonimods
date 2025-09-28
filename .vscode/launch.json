@@ -51,6 +51,25 @@
             "args": [],
             "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
             "stopAtEntry": false
+        },
+        {
+            "name": "墙式马桶优先级",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "墙式马桶优先级",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "stopAtEntry": false
+        },
+        {
+            "name": "马上关门",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "马上关门",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "args": [],
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
         }
             
 

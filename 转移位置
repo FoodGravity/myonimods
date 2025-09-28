@@ -23,3 +23,14 @@ mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复�
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\干板墙复制皮肤设置.dll" "D:\onimod\myonimods\干板墙复制皮肤设置\bin\Debug\干板墙复制皮肤设置.dll"
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\mod_info.yaml" "D:\onimod\myonimods\干板墙复制皮肤设置\mod_info.yaml"
 mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\干板墙复制皮肤设置\mod.yaml" "D:\onimod\myonimods\干板墙复制皮肤设置\mod.yaml"
+
+mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\墙式马桶优先级"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\墙式马桶优先级\墙式马桶优先级.dll" "D:\onimod\myonimods\墙式马桶优先级\bin\Debug\墙式马桶优先级.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\墙式马桶优先级\mod_info.yaml" "D:\onimod\myonimods\墙式马桶优先级\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\墙式马桶优先级\mod.yaml" "D:\onimod\myonimods\墙式马桶优先级\mod.yaml"
+
+mkdir "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\马上关门"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\马上关门\马上关门.dll" "D:\onimod\myonimods\马上关门\bin\Debug\马上关门.dll"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\马上关门\mod_info.yaml" "D:\onimod\myonimods\马上关门\mod_info.yaml"
+mklink "D:\Users\13091\Documents\Klei\OxygenNotIncluded\mods\Local\马上关门\mod.yaml" "D:\onimod\myonimods\马上关门\mod.yaml"
+

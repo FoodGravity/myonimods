@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "擦气", "擦气\擦气.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "干板墙复制皮肤设置", "干板墙复制皮肤设置\干板墙复制皮肤设置.csproj", "{E4D81AB2-BE4E-4BAD-BE21-08EDA81B915D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "墙式马桶优先级", "墙式马桶优先级\墙式马桶优先级.csproj", "{5F8D114D-8370-452D-B24F-FC80D45C77EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "马上关门", "马上关门\马上关门.csproj", "{76832817-1CD2-4777-BF5B-DFCB032464E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +69,14 @@ Global
 		{E4D81AB2-BE4E-4BAD-BE21-08EDA81B915D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4D81AB2-BE4E-4BAD-BE21-08EDA81B915D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4D81AB2-BE4E-4BAD-BE21-08EDA81B915D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F8D114D-8370-452D-B24F-FC80D45C77EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F8D114D-8370-452D-B24F-FC80D45C77EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F8D114D-8370-452D-B24F-FC80D45C77EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8D114D-8370-452D-B24F-FC80D45C77EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76832817-1CD2-4777-BF5B-DFCB032464E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76832817-1CD2-4777-BF5B-DFCB032464E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76832817-1CD2-4777-BF5B-DFCB032464E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76832817-1CD2-4777-BF5B-DFCB032464E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
