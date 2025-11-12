@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "zhuangbei",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -17,9 +17,9 @@
             "request": "launch",
             "preLaunchTask": "shouya",
 
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -27,9 +27,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "直线建造",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -37,9 +37,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "擦气",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -47,9 +47,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "干板墙复制皮肤设置",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -57,9 +57,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "墙式马桶优先级",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
             "stopAtEntry": false
         },
         {
@@ -67,9 +67,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "马上关门",
-            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P\\OxygenNotIncluded.exe",
+            "program": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P\\OxygenNotIncluded.exe",
             "args": [],
-            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v679336-P2P",
+            "cwd": "D:\\onimod\\game\\Oxygen.Not.Included.v693461-P2P",
         }
             
 

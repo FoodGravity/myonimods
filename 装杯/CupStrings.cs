@@ -24,7 +24,7 @@ namespace 装杯
                 {
                     public static LocString NAME => 是中文() ? "装杯" : "Cup";
                     public static LocString DESC => 是中文() ? "一个可以装东西的杯子" : "A container that can hold things";
-                    public static LocString EFFECT => 是中文() ? "能装1吨" : "Can hold 1 ton";
+                    public static LocString EFFECT => 是中文() ? "能装20吨" : "Can hold 20 ton";
                     public static LocString 无需材料 => 是中文() ? "无需材料" : "No materials needed";
 
                     public static class UI

@@ -261,7 +261,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
 
     // 最大容量
-    [Serialize] public float userMaxCapacity = 1000f;
+    [Serialize] public float userMaxCapacity = 20000f;
 
 
     // ISingleSliderControl 实现，滑条
