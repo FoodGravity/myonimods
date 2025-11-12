@@ -272,7 +272,7 @@ public class CupOptions : KMonoBehaviour, ISingleSliderControl, INToggleSideScre
 
     public int SliderDecimalPlaces(int index) => 3;
 
-    public float GetSliderMax(int index) => 1000f;
+    public float GetSliderMax(int index) => 20000f;
 
     public float GetSliderMin(int index) => 0f;
 
